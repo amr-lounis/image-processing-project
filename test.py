@@ -25,8 +25,18 @@ def HistogramShow(_img):
     h1 = HistogramMatrix255(matrix2D)
     img = ConvertMatrix_Image(matrix2D)
     Show_images([img,h1])
-    
-    
+   
+# ----------------------------------------- 
+# 1 Egalisation d’histogramme = OK
+# 3 Amélioration du contraste = Contrast enhancement = OK
+# 6 Détecteur SUT OK
+# 7 Descripteur SUT OK
+# 8 Distance euclidienne OK
+
+# 2 Lissage des images = smoothing = NON
+# 4 Segmentation par clustering OK
+# 5 Opérations morphologiques NON 50/100
+# ----------------------------------------- 
 def main():
     print("----------------------------------------- redImage origine")
     path1 = 'Images/001_1_1.bmp'

@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
-import cv2 as cv2
 # ****************************************************************************
+import cv2 as cv2
 def getKeypointsDesImg(p_path):
     # read image
     img = cv2.imread(p_path, 0)
@@ -34,7 +34,7 @@ def getMatchingNumber(_path1,_path2):
     good = getMatching(des1,des2)
 
     # print ("matches found : %d" % (len(good)))
-    imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 2))
+    imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
     return imgOut , len(good)
 
 # ****************************************************************************
