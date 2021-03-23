@@ -58,6 +58,19 @@ def ImgLog(_imgArray):
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
 
+def marixRange(_imgArray,_min,_max):
+    v1=(_max-_min)/255
+    print(v1)
+    for i in range(0,_imgArray.shape[0]):
+        for j in range(0,_imgArray.shape[1]):
+           if _imgArray[i][j] > _max :
+              _imgArray[i][j] = 255
+           elif _imgArray[i][j] < _min :
+              _imgArray[i][j] = 0
+           else:
+              _imgArray[i][j]= _imgArray[i][j] * v1
+    return _imgArray
+
 def Hexencode(rgb):
     r=rgb[0]
     g=rgb[1]

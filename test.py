@@ -8,6 +8,7 @@ from functions import ConvertImage_BiColor
 from functions import ImgInvers
 from functions import ImgLinear
 from functions import ImgLog
+from functions import marixRange
 
 from functions import getMatchingNumber
 
@@ -40,7 +41,7 @@ def inversColorShow(_img) -> None:
 def linearShow(_img) -> None:
     imgMarix2D = np.array(_img)
     matrix2D = ConvertMatrix_2d(imgMarix2D)
-    imgOut = ImgLinear(matrix2D,0.2,0)
+    imgOut = ImgLinear(matrix2D,2,0)
     Show_images("linear",[_img,imgOut])
     
 def logShow(_img) -> None:
@@ -54,6 +55,13 @@ def matchingShow(_path1,_path2) -> None:
     # print("matches found : %d" % (p))
     Show_images("matches found SIFT =: {0}".format(p),[imgMatching])
     
+def contrastEnhancementShow(_img,_min,_max) -> None:
+    imgMarix2D = np.array(_img)
+    matrix2D = ConvertMatrix_2d(imgMarix2D)
+    m = marixRange(matrix2D,_min,_max)
+    img = ConvertMatrix_Image(m)
+    HistogramShow(img)
+    
 # ----------------------------------------- 
 # 1 Egalisation d’histogramme = OK
 # 3 Amélioration du contraste = Contrast enhancement = OK
@@ -62,27 +70,32 @@ def matchingShow(_path1,_path2) -> None:
 # 8 Distance euclidienne OK
 
 # 2 Lissage des images = smoothing = NON
-# 4 Segmentation par clustering OK
+# 4 Segmentation par clustering NON
 # 5 Opérations morphologiques NON 50/100
 # ----------------------------------------- 
 
-def main():
+
+def main() -> None:
     print("----------------------------------------- redImage origine")
-    path1 = 'Images/001_1_1.bmp'
-    path2 = 'Images/001_1_2.bmp'
+    path1 = 'images/001_1_1.bmp'
+    path2 = 'images/001_1_2.bmp'
     img1 = Image.open(path1)
     img2 = Image.open(path2)
-    # 
+    
+    # contrast rang
+    contrastEnhancementShow(img1,50,230)
+    # contraste log
     logShow(img1)
-    # 
+    # contraste linear
     linearShow(img1)
-    # image inverce
+    # contraste inverce
     inversColorShow(img1)
     # Histograme
     HistogramShow(img1)
     # bi color
     imgBiColor = ConvertImage_BiColor(img1,50)
     HistogramShow(imgBiColor)
-    # 
+    # matrching SIFT
     matchingShow(img1,img2)
+    
 main()
