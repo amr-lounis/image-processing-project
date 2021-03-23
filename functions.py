@@ -2,9 +2,10 @@ import numpy as np
 from PIL import Image
 # ****************************************************************************
 import cv2 as cv2
-def getKeypointsDesImg(p_path):
+def getKeypointsDesImg(_img):
     # read image
-    img = cv2.imread(p_path, 0)
+    # img = cv2.imread(p_path, 0)
+    img = np.array(_img) 
     # Initiate SIFT detector
     sift = cv2.xfeatures2d.SIFT_create()
     # find the keypoints and descriptors with SIFT
@@ -28,9 +29,9 @@ def getMatching(des1,des2):
             goodMatchs.append(m)
     return goodMatchs
 
-def getMatchingNumber(_path1,_path2):
-    kp1, des1 , img1 = getKeypointsDesImg(_path1)
-    kp2, des2 , img2 = getKeypointsDesImg(_path2)
+def getMatchingNumber(_img1,_img2):
+    kp1, des1 , img1 = getKeypointsDesImg(_img1)
+    kp2, des2 , img2 = getKeypointsDesImg(_img2)
     good = getMatching(des1,des2)
 
     # print ("matches found : %d" % (len(good)))
@@ -38,11 +39,9 @@ def getMatchingNumber(_path1,_path2):
     return imgOut , len(good)
 
 # ****************************************************************************
-def ImgLinear(_imgArray):
+def ImgLinear(_imgArray,_b,_a):
     print("----------------------------------------- ImgLinear")
-    b=1
-    a=0
-    x=b* _imgArray + a
+    x=_b* _imgArray + _a
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
 
