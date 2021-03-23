@@ -1,7 +1,0 @@
-Must be installed
-pip install opencv-contrib-python 
-After that you can install
-pip install opencv
-pip install libopencv
-pip install py-opencv
-pip list
