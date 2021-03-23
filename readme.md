@@ -3,9 +3,9 @@ Must be installed
 
 pip install opencv-contrib-python 
 
-![](./info/01.png)
+![open terminal](info/01.PNG)
 
-![](./info/02.png)
+![code execut](info/02.PNG)
 
 After that you can install
 
