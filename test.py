@@ -31,17 +31,15 @@ def HistogramShow(_img) -> None:
     h1 = Histogram_Image(_img)
     Show_images("Histogram",[_img,h1])
     
-def ContrastInversShow(_img) -> None:
-    imgOut = ContrastInvers(_img)
-    Show_images("Contrast Invers",[_img,imgOut])
+def ContrastShow(_img) -> None:
+    imgOut = ContrastLog(_img)
+    Show_images("Contrast Log",[_img,imgOut])
     
-def ContrastLinearShow(_img) -> None:
     imgOut = ContrastLinear(_img,2,0)
     Show_images("Contrast Linear",[_img,imgOut])
     
-def ContrastLogShow(_img) -> None:
-    imgOut = ContrastLog(_img)
-    Show_images("Contrast Log",[_img,imgOut])
+    imgOut = ContrastInvers(_img)
+    Show_images("Contrast Invers",[_img,imgOut])
     
 def MatchingShow(_img1,_img2) -> None:
     imgMatching , p= GetMatchingImageValue(_img1,_img2)
@@ -105,12 +103,8 @@ def main() -> None:
     FilterImageShow(img1)
     print("----------------------------------------- Amélioration du contraste : Contrast Rang")
     ContrastRangShow(img1,0,50)
-    print("----------------------------------------- Amélioration du contraste : Contrast Log")
-    ContrastLogShow(img1)
-    print("----------------------------------------- Amélioration du contraste : Contrast Linear")
-    ContrastLinearShow(img1)
-    print("----------------------------------------- Amélioration du contraste : Contrast Invers")
-    ContrastInversShow(img1)
+    print("----------------------------------------- Amélioration du contraste")
+    ContrastShow(img1)
     print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
     imgBiColor = ConvertImage_BiColor(img1,50)
     HistogramShow(imgBiColor)
