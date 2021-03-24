@@ -46,11 +46,11 @@ def MatchingShow(_img1,_img2) -> None:
     # print("matches found : %d" % (p))
     Show_images("matches found SIFT =: {0}".format(p),[imgMatching])
     
-def ContrastRangShow(_img,_min,_max) -> None:
+def ContrastRangeShow(_img,_min,_max) -> None:
     h1 = Histogram_Image(_img)
     imgOut = ContrastRange(_img,_min,_max)
     h2 = Histogram_Image(imgOut)
-    Show_images("Histogram Contrast Rang min:{0} | max:{1}".format(_min,_max) ,[_img,h1,imgOut,h2])
+    Show_images("Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) ,[_img,h1,imgOut,h2])
     
 def FilterImageShow(_img) -> None:
     import numpy as np
@@ -89,7 +89,6 @@ def FilterImageShow(_img) -> None:
 # 5 Opérations morphologiques = 50/100
 # ----------------------------------------- 
 
-
 def main() -> None:
     print("----------------------------------------- red Image origine")
     path1 = 'images/001_1_1.bmp'
@@ -97,20 +96,20 @@ def main() -> None:
     img1 = ConvertImage_2d(Image.open(path1))
     img2 = ConvertImage_2d(Image.open(path2))
     
-    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    HistogramShow(img1)
-    print("----------------------------------------- Lissage des images : Filter Show")
-    FilterImageShow(img1)
-    print("----------------------------------------- Amélioration du contraste : Contrast Rang")
-    ContrastRangShow(img1,0,50)
-    print("----------------------------------------- Amélioration du contraste")
-    ContrastShow(img1)
+    # print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
+    # HistogramShow(img1)
+    # print("----------------------------------------- Lissage des images : Filter Show")
+    # FilterImageShow(img1)
+    # print("----------------------------------------- Amélioration du contraste : Contrast Range")
+    # ContrastRangeShow(img1,0,50)
+    # print("----------------------------------------- Amélioration du contraste")
+    # ContrastShow(img1)
     print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
-    imgBiColor = ConvertImage_BiColor(img1,50)
+    imgBiColor = ConvertImage_BiColor(img1,130)
     HistogramShow(imgBiColor)
 
-    print("----------------------------------------- SIFT : Matching Show")
-    MatchingShow(img1,img2)
+    # print("----------------------------------------- SIFT : Matching Show")
+    # MatchingShow(img1,img2)
 
     
 main()

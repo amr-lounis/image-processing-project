@@ -30,11 +30,11 @@ root.title('iris recognition ')
 v_label = Label(root,text= "path")
 v_label.grid(row=0,column=0,padx=10,pady=10)
 
-# v_path = ttk.Entry(root,width=10,font=("Arial",16) )
-# v_path.grid(row=0,column=1,columnspan=2,pady=10)
+v_path = ttk.Entry(root,width=10,font=("Arial",16) )
+v_path.grid(row=0,column=1,columnspan=2,pady=10)
 
-# v_bt_path1= tk.Button(root,text="select image",command = f_b1)
-# v_bt_path1.grid(row=0,column=3,pady=10)
+v_bt_path1= tk.Button(root,text="select image",command = f_b1)
+v_bt_path1.grid(row=0,column=3,pady=10)
 
 
 # im = Image.open(p)
@@ -49,14 +49,14 @@ v_label.grid(row=0,column=0,padx=10,pady=10)
 # canvas.grid(row=1,column=1,padx=10,pady=10)
 # canvas.pack()  
 
-p = "D:/img/12.jpg"
-im= Image.open(p)
-im.thumbnail((300, 300), Image.ANTIALIAS)
-canvas = Canvas(root,width=300,height=300) 
-canvas.grid(row=1,column=0,pady=10)
-canvas.pack()  
-img = ImageTk.PhotoImage(im)  
-canvas.create_image(20, 20, anchor=NW, image=img) 
+# p = "images/001_1_1.bmp"
+# im= Image.open(p)
+# im.thumbnail((300, 300), Image.ANTIALIAS)
+# canvas = Canvas(root,width=300,height=300) 
+# canvas.grid(row=1,column=0,pady=10)
+# canvas.pack()  
+# img = ImageTk.PhotoImage(im)  
+# canvas.create_image(20, 20, anchor=NW, image=img) 
 
 # # root.withdraw()
 
