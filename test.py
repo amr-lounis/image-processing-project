@@ -1,7 +1,8 @@
 from PIL import Image
 import functions as fn
 
-def Show_images(_title,_list) -> None:
+
+def Show_images(_list,_title="") -> None:
     import matplotlib.pyplot as plt
     n: int = len(_list)
     f =  plt.figure(figsize=(10,5))
@@ -11,33 +12,33 @@ def Show_images(_title,_list) -> None:
         f.add_subplot(1, n, i + 1)
         plt.axis('off')
         plt.imshow(_list[i],cmap='gray')
-        
-    plt.show(block=True)
 
-def HistogramShow(_img) -> None:
+    plt.show(block=True)
+    
+def HistogramShow(_img,_of="") -> None:
     h1 = fn.Histogram_Image(_img)
-    Show_images("Histogram",[_img,h1])
+    Show_images([_img,h1],"Histogram "+ _of)
     
 def ContrastShow(_img) -> None:
     imgOut = fn.ContrastLog(_img)
-    Show_images("Contrast Log",[_img,imgOut])
+    Show_images([_img,imgOut],"Contrast Log")
     
     imgOut = fn.ContrastLinear(_img,2,0)
-    Show_images("Contrast Linear",[_img,imgOut])
+    Show_images([_img,imgOut],"Contrast Linear")
     
     imgOut = fn.ContrastInvers(_img)
-    Show_images("Contrast Invers",[_img,imgOut])
+    Show_images([_img,imgOut],"Contrast Invers")
     
 def MatchingShow(_img1,_img2) -> None:
     imgMatching , p= fn.GetMatchingImageValue(_img1,_img2)
     # print("matches found : %d" % (p))
-    Show_images("matches found SIFT =: {0}".format(p),[imgMatching])
+    Show_images([imgMatching],"matches found SIFT =: {0}".format(p))
     
 def ContrastRangeShow(_img,_min,_max) -> None:
     h1 = fn.Histogram_Image(_img)
     imgOut = fn.ContrastRange(_img,_min,_max)
     h2 = fn.Histogram_Image(imgOut)
-    Show_images("Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) ,[_img,h1,imgOut,h2])
+    Show_images([_img,h1,imgOut,h2],"Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) )
     
 def FilterImageShow(_img) -> None:
     import numpy as np
@@ -56,13 +57,13 @@ def FilterImageShow(_img) -> None:
                   [1 / 9, 1 / 9, 1 / 9]])
 
     imgOut = fn.FilterImage(_img,filter0)
-    Show_images("Filter Moyen",[_img,imgOut])
+    Show_images([_img,imgOut],"Filter Moyen")
         
     imgOut = fn.FilterImage(_img,filte_h)
-    Show_images("Filter Horizontal",[_img,imgOut])
+    Show_images([_img,imgOut],"Filter Horizontal")
     
     imgOut = fn.FilterImage(imgOut,filte_v)
-    Show_images("Filter vertical",[_img,imgOut])
+    Show_images([_img,imgOut],"Filter vertical")
     
 # ----------------------------------------- 
 # 1 Egalisation d’histogramme = OK
@@ -84,16 +85,16 @@ def main() -> None:
     img2 = fn.ConvertImage_2d(Image.open(path2))
     
     print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    HistogramShow(img1)
+    HistogramShow(img1 , "original picture")
     print("----------------------------------------- Lissage des images : Filter Show")
     FilterImageShow(img1)
     print("----------------------------------------- Amélioration du contraste : Contrast Range")
-    ContrastRangeShow(img1,0,50)
+    ContrastRangeShow(img1,30,220)
     print("----------------------------------------- Amélioration du contraste")
     ContrastShow(img1)
     print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
     imgBiColor = fn.ConvertImage_BiColor(img1,130)
-    HistogramShow(imgBiColor)
+    HistogramShow(imgBiColor , " Bi Color")
 
     print("----------------------------------------- SIFT : Matching Show")
     MatchingShow(img1,img2)
