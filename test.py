@@ -1,18 +1,5 @@
 from PIL import Image
-
-from functions import ConvertImage_2d
-from functions import ConvertImage_BiColor
-
-from functions import ContrastRange
-from functions import ContrastLog
-from functions import ContrastInvers
-from functions import ContrastLinear
-
-from functions import GetMatchingImageValue
-
-from functions import Histogram_Image
-
-from functions import FilterImage
+import functions as fn
 
 def Show_images(_title,_list) -> None:
     import matplotlib.pyplot as plt
@@ -28,28 +15,28 @@ def Show_images(_title,_list) -> None:
     plt.show(block=True)
 
 def HistogramShow(_img) -> None:
-    h1 = Histogram_Image(_img)
+    h1 = fn.Histogram_Image(_img)
     Show_images("Histogram",[_img,h1])
     
 def ContrastShow(_img) -> None:
-    imgOut = ContrastLog(_img)
+    imgOut = fn.ContrastLog(_img)
     Show_images("Contrast Log",[_img,imgOut])
     
-    imgOut = ContrastLinear(_img,2,0)
+    imgOut = fn.ContrastLinear(_img,2,0)
     Show_images("Contrast Linear",[_img,imgOut])
     
-    imgOut = ContrastInvers(_img)
+    imgOut = fn.ContrastInvers(_img)
     Show_images("Contrast Invers",[_img,imgOut])
     
 def MatchingShow(_img1,_img2) -> None:
-    imgMatching , p= GetMatchingImageValue(_img1,_img2)
+    imgMatching , p= fn.GetMatchingImageValue(_img1,_img2)
     # print("matches found : %d" % (p))
     Show_images("matches found SIFT =: {0}".format(p),[imgMatching])
     
 def ContrastRangeShow(_img,_min,_max) -> None:
-    h1 = Histogram_Image(_img)
-    imgOut = ContrastRange(_img,_min,_max)
-    h2 = Histogram_Image(imgOut)
+    h1 = fn.Histogram_Image(_img)
+    imgOut = fn.ContrastRange(_img,_min,_max)
+    h2 = fn.Histogram_Image(imgOut)
     Show_images("Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) ,[_img,h1,imgOut,h2])
     
 def FilterImageShow(_img) -> None:
@@ -68,13 +55,13 @@ def FilterImageShow(_img) -> None:
                   [1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9]])
 
-    imgOut = FilterImage(_img,filter0)
+    imgOut = fn.FilterImage(_img,filter0)
     Show_images("Filter Moyen",[_img,imgOut])
         
-    imgOut = FilterImage(_img,filte_h)
+    imgOut = fn.FilterImage(_img,filte_h)
     Show_images("Filter Horizontal",[_img,imgOut])
     
-    imgOut = FilterImage(_img,filte_v)
+    imgOut = fn.FilterImage(imgOut,filte_v)
     Show_images("Filter vertical",[_img,imgOut])
     
 # ----------------------------------------- 
@@ -93,23 +80,23 @@ def main() -> None:
     print("----------------------------------------- red Image origine")
     path1 = 'images/001_1_1.bmp'
     path2 = 'images/001_1_2.bmp'
-    img1 = ConvertImage_2d(Image.open(path1))
-    img2 = ConvertImage_2d(Image.open(path2))
+    img1 = fn.ConvertImage_2d(Image.open(path1))
+    img2 = fn.ConvertImage_2d(Image.open(path2))
     
-    # print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    # HistogramShow(img1)
-    # print("----------------------------------------- Lissage des images : Filter Show")
-    # FilterImageShow(img1)
-    # print("----------------------------------------- Amélioration du contraste : Contrast Range")
-    # ContrastRangeShow(img1,0,50)
-    # print("----------------------------------------- Amélioration du contraste")
-    # ContrastShow(img1)
+    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
+    HistogramShow(img1)
+    print("----------------------------------------- Lissage des images : Filter Show")
+    FilterImageShow(img1)
+    print("----------------------------------------- Amélioration du contraste : Contrast Range")
+    ContrastRangeShow(img1,0,50)
+    print("----------------------------------------- Amélioration du contraste")
+    ContrastShow(img1)
     print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
-    imgBiColor = ConvertImage_BiColor(img1,130)
+    imgBiColor = fn.ConvertImage_BiColor(img1,130)
     HistogramShow(imgBiColor)
 
-    # print("----------------------------------------- SIFT : Matching Show")
-    # MatchingShow(img1,img2)
+    print("----------------------------------------- SIFT : Matching Show")
+    MatchingShow(img1,img2)
 
     
 main()
