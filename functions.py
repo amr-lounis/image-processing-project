@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 # ****************************************************************************
 import cv2 as cv2
-def getKeypointsDesImg(_img):
+def GetKeypointsDesImg(_img):
     # read image
     # img = cv2.imread(p_path, 0)
     img = np.array(_img) 
@@ -16,7 +16,7 @@ def getKeypointsDesImg(_img):
     # plt.imshow(imgOut, 'gray'),plt.show()
     return kp,des,img
 
-def getMatching(des1,des2):
+def GetMatching(des1,des2):
     FLANN_INDEX_KDTREE = 1
     index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
     search_params = dict(checks = 50)
@@ -29,47 +29,54 @@ def getMatching(des1,des2):
             goodMatchs.append(m)
     return goodMatchs
 
-def getMatchingNumber(_img1,_img2):
-    kp1, des1 , img1 = getKeypointsDesImg(_img1)
-    kp2, des2 , img2 = getKeypointsDesImg(_img2)
-    good = getMatching(des1,des2)
+def GetMatchingImageValue(_img1,_img2):
+    kp1, des1 , img1 = GetKeypointsDesImg(_img1)
+    kp2, des2 , img2 = GetKeypointsDesImg(_img2)
+    good = GetMatching(des1,des2)
 
     # print ("matches found : %d" % (len(good)))
     imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
     return imgOut , len(good)
 
 # ****************************************************************************
-def ImgLinear(_imgArray,_b,_a):
-    print("----------------------------------------- ImgLinear")
-    x=_b* _imgArray + _a
+def ContrastLinear(_img,_b,_a):
+    imgArray = np.array(_img)
+    
+    x=_b* imgArray + _a
+    
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
 
-def ImgInvers(_imgArray):
-    print("----------------------------------------- ImgInvers")
-    x=255- _imgArray
+def ContrastInvers(_img):
+    imgArray = np.array(_img)
+    
+    x=255- imgArray
+    
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
 
-def ImgLog(_imgArray):
-    print("----------------------------------------- ImgLog")
-    x = np.abs(np.log(_imgArray+1.1)*255 /
-               np.log(np.max(_imgArray+1.1)))
+def ContrastLog(_img):
+    imgArray = np.array(_img)
+    
+    x = np.abs(np.log(imgArray+1.1)*255 /
+               np.log(np.max(imgArray+1.1)))
+    
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
 
-def marixRange(_imgArray,_min,_max):
-    v1=(_max-_min)/255
-    print(v1)
-    for i in range(0,_imgArray.shape[0]):
-        for j in range(0,_imgArray.shape[1]):
-           if _imgArray[i][j] > _max :
-              _imgArray[i][j] = 255
-           elif _imgArray[i][j] < _min :
-              _imgArray[i][j] = 0
-           else:
-              _imgArray[i][j]= _imgArray[i][j] * v1
-    return _imgArray
+def ContrastRange(_img,_min,_max):
+    imgArray = np.array(_img)
+    # print("max",np.max(imgArray),"min",np.min(imgArray))   
+    for i in range(0,imgArray.shape[0]):
+        for j in range(0,imgArray.shape[1]):
+            imgArray[i][j]= int(255/(_max-_min) * (imgArray[i][j] - _min ))
+            if imgArray[i][j] > 255:
+                imgArray[i][j] = 255
+            elif imgArray[i][j] <0:
+                imgArray[i][j] = 0
+    print("max",np.max(imgArray),"min",np.min(imgArray))        
+    imgout=Image.fromarray(imgArray.astype(np.uint8))     
+    return imgout
 
 def Hexencode(rgb):
     r=rgb[0]
@@ -79,47 +86,45 @@ def Hexencode(rgb):
 
 # ****************************************************************************
 
-def ConvertMatrix_2d(_imgArray):
-    print("----------------------------------------- ConvertMatrix_2d")
-    if len(_imgArray.shape) == 2:
-        n_line = _imgArray.shape[0]
-        n_cols = _imgArray.shape[1]
+def ConvertImage_2d(_img):
+    imgArray = np.array(_img)
+        
+    if len(imgArray.shape) == 2:
+        n_line = imgArray.shape[0]
+        n_cols = imgArray.shape[1]
         print("matrix 2 D","row",n_line,"col",n_cols)
-        return _imgArray
+        return imgArray
     else:
-        n_line = _imgArray.shape[0]
-        n_cols = _imgArray.shape[1]
-        n_3 = _imgArray.shape[2]
+        n_line = imgArray.shape[0]
+        n_cols = imgArray.shape[1]
+        n_3 = imgArray.shape[2]
         print("matrix 3 D","row",n_line,"col",n_cols,"d_3",n_3)
         matrix2D = np.zeros((n_line,n_cols), np.uint64)
         for i in range(0,n_line):
             for j in range(0,n_cols):
-                val= int((_imgArray[i,j,0]+_imgArray[i,j,1]+_imgArray[i,j,2])/3)
+                val= int((imgArray[i,j,0]+imgArray[i,j,1]+imgArray[i,j,2])/3)
                 matrix2D[i,j]= val
                 
-        return matrix2D
-
-def ConvertImage_BiColor(_img,_seullage):
-    print("----------------------------------------- ConvertImage_BiColor")
-    # fn = lambda x : 255 if x > _seullage else 0
-    # return _img.convert('L').point(fn, mode='1')
-    mt = np.array(_img)
-    mt_bi = np.where(mt > _seullage, 255, 0)
-    return Image.fromarray(mt_bi.astype(np.uint8))
-    
-def ConvertMatrix_Image(_imgArray2d):
-    print("----------------------------------------- ConvertMatrix_Image")
-    imgout = Image.fromarray(_imgArray2d.astype(np.uint32))
+    imgout=Image.fromarray(imgArray.astype(np.uint8))     
     return imgout
 
-def HistogramMatrix255 (_imgArray):
+def ConvertImage_BiColor(_img,_seullage):
+    imgArray = np.array(_img)
+    
+    mt_bi = np.where(imgArray > _seullage, 255, 0)
+    
+    return Image.fromarray(mt_bi.astype(np.uint8))
+
+def Histogram_Image(_img):
     from matplotlib.backends.backend_agg import FigureCanvas
     from matplotlib.figure import Figure
-    print("----------------------------------------- matrixHistogram255")
+
+    imgArray = np.array(_img)
+    
     y = np.zeros(256, np.uint32)
-    for i in range(0,_imgArray.shape[0]):
-        for j in range(0,_imgArray.shape[1]):
-            y[_imgArray[i,j]] += 1
+    for i in range(0,imgArray.shape[0]):
+        for j in range(0,imgArray.shape[1]):
+            y[imgArray[i,j]] += 1
     
     fig = Figure()
     canvas = FigureCanvas(fig)
@@ -131,3 +136,18 @@ def HistogramMatrix255 (_imgArray):
 
     canvas.draw()  
     return canvas.renderer.buffer_rgba();
+
+def FilterImage(_image,_filter3x3):
+    arrayIn= np.array(_image)
+    arrayOut = np.zeros(arrayIn.shape,np.uint8)
+    
+    for ligne in range(1,arrayIn.shape[0]-1):
+        for col in range(1,arrayIn.shape[1]-1):
+            # On calcule la somme 
+            somme = 0
+            for l in range(3):
+                for c in range(3):
+                    somme += _filter3x3[l,c]*arrayIn[ligne-1+l,col-1+c]
+            arrayOut[ligne,col] = somme
+
+    return Image.fromarray(arrayOut.astype(np.uint8))

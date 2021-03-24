@@ -1,16 +1,18 @@
-import numpy as np
 from PIL import Image
-from functions import HistogramMatrix255
-from functions import ConvertMatrix_2d
-from functions import ConvertMatrix_Image
+
+from functions import ConvertImage_2d
 from functions import ConvertImage_BiColor
 
-from functions import ImgInvers
-from functions import ImgLinear
-from functions import ImgLog
-from functions import marixRange
+from functions import ContrastRange
+from functions import ContrastLog
+from functions import ContrastInvers
+from functions import ContrastLinear
 
-from functions import getMatchingNumber
+from functions import GetMatchingImageValue
+
+from functions import Histogram_Image
+
+from functions import FilterImage
 
 def Show_images(_title,_list) -> None:
     import matplotlib.pyplot as plt
@@ -26,76 +28,95 @@ def Show_images(_title,_list) -> None:
     plt.show(block=True)
 
 def HistogramShow(_img) -> None:
-    imgMarix2D = np.array(_img)
-    matrix2D = ConvertMatrix_2d(imgMarix2D)
-    h1 = HistogramMatrix255(matrix2D)
-    img = ConvertMatrix_Image(matrix2D)
-    Show_images("Histogram",[img,h1])
+    h1 = Histogram_Image(_img)
+    Show_images("Histogram",[_img,h1])
     
-def inversColorShow(_img) -> None:
-    imgMarix2D = np.array(_img)
-    matrix2D = ConvertMatrix_2d(imgMarix2D)
-    imgOut = ImgInvers(matrix2D)
-    Show_images("invers Color",[_img,imgOut])
+def ContrastInversShow(_img) -> None:
+    imgOut = ContrastInvers(_img)
+    Show_images("Contrast Invers",[_img,imgOut])
     
-def linearShow(_img) -> None:
-    imgMarix2D = np.array(_img)
-    matrix2D = ConvertMatrix_2d(imgMarix2D)
-    imgOut = ImgLinear(matrix2D,2,0)
-    Show_images("linear",[_img,imgOut])
+def ContrastLinearShow(_img) -> None:
+    imgOut = ContrastLinear(_img,2,0)
+    Show_images("Contrast Linear",[_img,imgOut])
     
-def logShow(_img) -> None:
-    imgMarix2D = np.array(_img)
-    matrix2D = ConvertMatrix_2d(imgMarix2D)
-    imgOut = ImgLog(matrix2D)
-    Show_images("log",[_img,imgOut])
+def ContrastLogShow(_img) -> None:
+    imgOut = ContrastLog(_img)
+    Show_images("Contrast Log",[_img,imgOut])
     
-def matchingShow(_path1,_path2) -> None:
-    imgMatching , p= getMatchingNumber(_path1,_path2)
+def MatchingShow(_img1,_img2) -> None:
+    imgMatching , p= GetMatchingImageValue(_img1,_img2)
     # print("matches found : %d" % (p))
     Show_images("matches found SIFT =: {0}".format(p),[imgMatching])
     
-def contrastEnhancementShow(_img,_min,_max) -> None:
-    imgMarix2D = np.array(_img)
-    matrix2D = ConvertMatrix_2d(imgMarix2D)
-    m = marixRange(matrix2D,_min,_max)
-    img = ConvertMatrix_Image(m)
-    HistogramShow(img)
+def ContrastRangShow(_img,_min,_max) -> None:
+    h1 = Histogram_Image(_img)
+    imgOut = ContrastRange(_img,_min,_max)
+    h2 = Histogram_Image(imgOut)
+    Show_images("Histogram Contrast Rang",[_img,h1,imgOut,h2])
     
+def FilterImageShow(_img) -> None:
+    import numpy as np
+    # 
+    # noyau = np.array([[-1, 0, 1],
+    #                   [-2, 0, 2],
+    #                   [-1, 0, 1 ]
+    #                   ])
+    # 
+    # noyau = np.array([[-1, 0, 1],
+    #                   [-2, 0, 2],
+    #                   [-1, 0, 1 ]
+    #                   ])
+    # 
+    # noyau = np.array([[-1, -2, -1],
+    #                   [0, 0, 0],
+    #                   [1, 2, 1 ]
+    #                   ])
+    # 
+    filter0 = np.array([[1 / 9, 1 / 9, 1 / 9],
+                  [1 / 9, 1 / 9, 1 / 9],
+                  [1 / 9, 1 / 9, 1 / 9]])
+
+    imgOut = FilterImage(_img,filter0)
+    Show_images("Filter ",[_img,imgOut])
+        
 # ----------------------------------------- 
 # 1 Egalisation d’histogramme = OK
+# 2 Lissage des images = smoothing = OK
 # 3 Amélioration du contraste = Contrast enhancement = OK
 # 6 Détecteur SIFT OK
 # 7 Descripteur SIFT OK
 # 8 Distance euclidienne OK
 
-# 2 Lissage des images = smoothing = NON
 # 4 Segmentation par clustering NON
 # 5 Opérations morphologiques NON 50/100
 # ----------------------------------------- 
 
 
 def main() -> None:
-    print("----------------------------------------- redImage origine")
+    print("----------------------------------------- red Image origine")
     path1 = 'images/001_1_1.bmp'
     path2 = 'images/001_1_2.bmp'
-    img1 = Image.open(path1)
-    img2 = Image.open(path2)
+    img1 = ConvertImage_2d(Image.open(path1))
+    img2 = ConvertImage_2d(Image.open(path2))
     
-    # contrast rang
-    contrastEnhancementShow(img1,50,230)
-    # contraste log
-    logShow(img1)
-    # contraste linear
-    linearShow(img1)
-    # contraste inverce
-    inversColorShow(img1)
-    # Histograme
+    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
     HistogramShow(img1)
-    # bi color
+    print("----------------------------------------- Lissage des images : Filter Show")
+    FilterImageShow(img1)
+    print("----------------------------------------- Amélioration du contraste : Contrast Rang")
+    ContrastRangShow(img1,0,50)
+    print("----------------------------------------- Amélioration du contraste : Contrast Log")
+    ContrastLogShow(img1)
+    print("----------------------------------------- Amélioration du contraste : Contrast Linear")
+    ContrastLinearShow(img1)
+    print("----------------------------------------- Amélioration du contraste : Contrast Invers")
+    ContrastInversShow(img1)
+    print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
     imgBiColor = ConvertImage_BiColor(img1,50)
     HistogramShow(imgBiColor)
-    # matrching SIFT
-    matchingShow(img1,img2)
+
+    print("----------------------------------------- SIFT : Matching Show")
+    MatchingShow(img1,img2)
+
     
 main()
