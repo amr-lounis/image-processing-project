@@ -52,33 +52,33 @@ def ContrastRangShow(_img,_min,_max) -> None:
     h1 = Histogram_Image(_img)
     imgOut = ContrastRange(_img,_min,_max)
     h2 = Histogram_Image(imgOut)
-    Show_images("Histogram Contrast Rang",[_img,h1,imgOut,h2])
+    Show_images("Histogram Contrast Rang min:{0} | max:{1}".format(_min,_max) ,[_img,h1,imgOut,h2])
     
 def FilterImageShow(_img) -> None:
     import numpy as np
-    # 
-    # noyau = np.array([[-1, 0, 1],
-    #                   [-2, 0, 2],
-    #                   [-1, 0, 1 ]
-    #                   ])
-    # 
-    # noyau = np.array([[-1, 0, 1],
-    #                   [-2, 0, 2],
-    #                   [-1, 0, 1 ]
-    #                   ])
-    # 
-    # noyau = np.array([[-1, -2, -1],
-    #                   [0, 0, 0],
-    #                   [1, 2, 1 ]
-    #                   ])
-    # 
+    filte_v = np.array([[-1, 0, 1],
+                      [-2, 0, 2],
+                      [-1, 0, 1 ]
+                      ])
+    
+    filte_h = np.array([[-1, -2, -1],
+                      [0, 0, 0],
+                      [1, 2, 1 ]
+                      ])
+    
     filter0 = np.array([[1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9]])
 
     imgOut = FilterImage(_img,filter0)
-    Show_images("Filter ",[_img,imgOut])
+    Show_images("Filter Moyen",[_img,imgOut])
         
+    imgOut = FilterImage(_img,filte_h)
+    Show_images("Filter Horizontal",[_img,imgOut])
+    
+    imgOut = FilterImage(_img,filte_v)
+    Show_images("Filter vertical",[_img,imgOut])
+    
 # ----------------------------------------- 
 # 1 Egalisation d’histogramme = OK
 # 2 Lissage des images = smoothing = OK
@@ -88,7 +88,7 @@ def FilterImageShow(_img) -> None:
 # 8 Distance euclidienne OK
 
 # 4 Segmentation par clustering NON
-# 5 Opérations morphologiques NON 50/100
+# 5 Opérations morphologiques = 50/100
 # ----------------------------------------- 
 
 
