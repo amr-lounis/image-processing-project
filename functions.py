@@ -1,6 +1,24 @@
 import numpy as np
 from PIL import Image
+
 # ****************************************************************************
+
+def Hexencode(rgb):
+    r=rgb[0]
+    g=rgb[1]
+    b=rgb[2]
+    return '#%02x%02x%02x' % (r,g,b)
+
+def fig2img(fig):
+    """Convert a Matplotlib figure to a PIL Image and return it"""
+    import io
+    buf = io.BytesIO()
+    fig.savefig(buf)
+    buf.seek(0)
+    img = Image.open(buf)
+    return img
+# ****************************************************************************
+
 import cv2 as cv2
 def GetKeypointsDesImg(_img):
     # read image
@@ -77,13 +95,6 @@ def ContrastRange(_img,_min,_max):
     print("max",np.max(imgArray),"min",np.min(imgArray))        
     imgout=Image.fromarray(imgArray.astype(np.uint8))     
     return imgout
-
-def Hexencode(rgb):
-    r=rgb[0]
-    g=rgb[1]
-    b=rgb[2]
-    return '#%02x%02x%02x' % (r,g,b)
-
 # ****************************************************************************
 
 def ConvertImage_2d(_img):
@@ -116,7 +127,6 @@ def ConvertImage_BiColor(_img,_seullage):
     return Image.fromarray(mt_bi.astype(np.uint8))
 
 def Histogram_Image(_img):
-    from matplotlib.backends.backend_agg import FigureCanvas
     from matplotlib.figure import Figure
 
     imgArray = np.array(_img)
@@ -127,15 +137,15 @@ def Histogram_Image(_img):
             y[imgArray[i,j]] += 1
     
     fig = Figure()
-    canvas = FigureCanvas(fig)
     ax = fig.subplots()
     ax.set_xlabel("value of pixel")
     ax.set_ylabel("nomber repitition")   
     ax.set_title('histogram')
     ax.plot(range(0,256),y,'black');
 
-    canvas.draw()  
-    return canvas.renderer.buffer_rgba();
+    img = fig2img(fig)
+    # img.show()
+    return img;
 
 def FilterImage(_image,_filter3x3):
     arrayIn= np.array(_image)

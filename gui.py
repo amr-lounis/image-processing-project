@@ -20,10 +20,10 @@ from PIL import ImageTk, Image
 global img
 def f_b1(): 
     f = filedialog.askopenfilename()
-    img = ImageTk.PhotoImage(Image.open(f))   
+    # img = ImageTk.PhotoImage(Image.open(f))
+    v_path.text= f
     
 root = Tk()
-
 root.geometry("700x600")
 root.title('iris recognition ')
 

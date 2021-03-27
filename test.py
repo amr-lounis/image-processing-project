@@ -1,18 +1,16 @@
 from PIL import Image
 import functions as fn
 
-
 def Show_images(_list,_title="") -> None:
     import matplotlib.pyplot as plt
     n: int = len(_list)
-    f =  plt.figure(figsize=(10,5))
+    f =  plt.figure(figsize=(3*len(_list),3))
     f.suptitle(_title, fontsize=16)
     for i in range(n):
-        # Debug, plot figure
         f.add_subplot(1, n, i + 1)
         plt.axis('off')
         plt.imshow(_list[i],cmap='gray')
-
+    
     plt.show(block=True)
     
 def HistogramShow(_img,_of="") -> None:
@@ -84,20 +82,23 @@ def main() -> None:
     img1 = fn.ConvertImage_2d(Image.open(path1))
     img2 = fn.ConvertImage_2d(Image.open(path2))
     
-    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    HistogramShow(img1 , "original picture")
-    print("----------------------------------------- Lissage des images : Filter Show")
-    FilterImageShow(img1)
-    print("----------------------------------------- Amélioration du contraste : Contrast Range")
-    ContrastRangeShow(img1,30,220)
+    # print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
+    # HistogramShow(img1 , "original picture")
+    # print("----------------------------------------- Lissage des images : Filter Show")
+    # FilterImageShow(img1)
+    # print("----------------------------------------- Amélioration du contraste : Contrast Range")
+    # ContrastRangeShow(img1,30,220)
     print("----------------------------------------- Amélioration du contraste")
     ContrastShow(img1)
-    print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
-    imgBiColor = fn.ConvertImage_BiColor(img1,130)
-    HistogramShow(imgBiColor , " Bi Color")
+    # print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
+    # imgBiColor = fn.ConvertImage_BiColor(img1,50)
+    # HistogramShow(imgBiColor , " Bi Color")
 
-    print("----------------------------------------- SIFT : Matching Show")
-    MatchingShow(img1,img2)
+    # imgOut = fn.ContrastInvers(imgBiColor)
+    # Show_images([img1,imgBiColor,imgOut],"tetaps")
+    
+    # print("----------------------------------------- SIFT : Matching Show")
+    # MatchingShow(img1,img2)
 
     
 main()
