@@ -2,6 +2,15 @@ import numpy as np
 from PIL import Image
 
 # ****************************************************************************
+import os
+def FilesYield(_dir_path,_extension):
+    for root, dirs, files in os.walk(os.path.abspath(_dir_path)): 
+        for file in files:
+            file = str(file)
+            if file.endswith(_extension):
+                yield os.path.join(root, file)     
+def Files(_dir_path,_extension):
+    return [f for f in FilesYield(_dir_path,_extension)]
 
 def Hexencode(rgb):
     r=rgb[0]
