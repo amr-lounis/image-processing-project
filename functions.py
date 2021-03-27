@@ -113,7 +113,6 @@ def ConvertImage_2d(_img):
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
         print("matrix 2 D","row",n_line,"col",n_cols)
-        return imgArray
     else:
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]

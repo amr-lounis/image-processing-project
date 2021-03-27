@@ -17,9 +17,10 @@ def getPath()-> None:
 # ----------------------------------------------------
 def Showimg(filename):
     try:
-        img = Image.open(filename)
+        imageIn = Image.open(filename)
+        imageIn = fn.ConvertImage_2d(imageIn)
         
-        img = ImageTk.PhotoImage(img)
+        img = ImageTk.PhotoImage(imageIn)
         w, h = img.width(), img.height()
         
         v_canvas_input.image = img
@@ -30,9 +31,11 @@ def Showimg(filename):
 # ----------------------------------------------------
 def ShowHistogram():
     try:
-        img = Image.open(v_pathVar_input.get())
+        filename =v_pathVar_input.get()
+        imageIn = Image.open(filename)
+        imageIn = fn.ConvertImage_2d(imageIn)
         
-        img = fn.Histogram_Image(img)
+        img = fn.Histogram_Image(imageIn)
         
         img = ImageTk.PhotoImage(img)
         w, h = img.width(), img.height()
@@ -46,13 +49,15 @@ def ShowHistogram():
 def ShowLissage():
     import numpy as np
     try:
-        img = Image.open(v_pathVar_input.get())
+        filename =v_pathVar_input.get()
+        imageIn = Image.open(filename)
+        imageIn = fn.ConvertImage_2d(imageIn)
         
         filter0 = np.array([[1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9]])
          
-        img = fn.imgOut = fn.FilterImage(img,filter0)
+        img = fn.FilterImage(imageIn,filter0)
         
         img = ImageTk.PhotoImage(img)
         w, h = img.width(), img.height()
