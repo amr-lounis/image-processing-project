@@ -169,15 +169,12 @@ def FilterImage(_image,_filter3x3):
             arrayOut[ligne,col] = somme
 
     return Image.fromarray(arrayOut.astype(np.uint8))
-# ----------------------------------------------------------------------
-def add_padding(image, padding, value):
-    return cv2.copyMakeBorder(image, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=value)
+
 # ----------------------------------------------------------------------
 def ErosionArray(image, kernel):
     img_operated = image.copy() #this will be the image
-    padded = add_padding(image, 1, 1)  # <<< MODIFIED
-    vertical_window = padded.shape[0] - kernel.shape[0] #final vertical window position
-    horizontal_window = padded.shape[1] - kernel.shape[1] #final horizontal window position
+    vertical_window = image.shape[0] - kernel.shape[0] #final vertical window position
+    horizontal_window = image.shape[1] - kernel.shape[1] #final horizontal window position
     vertical_pos = 0
     while vertical_pos <= vertical_window:
         horizontal_pos = 0
@@ -186,12 +183,9 @@ def ErosionArray(image, kernel):
             for i in range(kernel.shape[0]):      # <<< MODIFIED
                 for j in range(kernel.shape[1]):  # <<< MODIFIED
                     if kernel[i][j] == 1:         # <<< ADDED
-                        #First Case
-                        if True:
-                            #if we find 0, then break the second loop
-                            if padded[vertical_pos+i][horizontal_pos+j] == 0:  # <<< MODIFIED
-                                erosion_flag = True                            # <<< MODIFIED
-                                break
+                        if image[vertical_pos+i][horizontal_pos+j] == 0:  # <<< MODIFIED
+                            erosion_flag = True                            # <<< MODIFIED
+                            break
                 if erosion_flag:         # <<< MODIFIED
                     img_operated[vertical_pos, horizontal_pos] = 0  # <<< ADDED
                     break
@@ -202,9 +196,8 @@ def ErosionArray(image, kernel):
 # ----------------------------------------------------------------------
 def DilationArray(image, kernel):
     img_operated = image.copy() #this will be the image  # <<< ADDED
-    padded = add_padding(image, 1, 0)  # <<< MODIFIED
-    vertical_window = padded.shape[0] - kernel.shape[0] #final vertical window position
-    horizontal_window = padded.shape[1] - kernel.shape[1] #final horizontal window position
+    vertical_window = image.shape[0] - kernel.shape[0] #final vertical window position
+    horizontal_window = image.shape[1] - kernel.shape[1] #final horizontal window position
     vertical_pos = 0
     while vertical_pos <= vertical_window:
         horizontal_pos = 0
@@ -214,7 +207,7 @@ def DilationArray(image, kernel):
             for i in range(kernel.shape[0]):      # <<< MODIFIED
                 for j in range(kernel.shape[1]):  # <<< MODIFIED
                     if kernel[i][j] == 1:  
-                        if padded[vertical_pos+i][horizontal_pos+j] == 1:  # <<< MODIFIED
+                        if image[vertical_pos+i][horizontal_pos+j] == 1:  # <<< MODIFIED
                             dilation_flag = True
                             break
                 if dilation_flag:       # <<< FIXED
@@ -234,22 +227,3 @@ def DilationImage(_image, kernel):
     imgArrayD = DilationArray(imgArray,kernel)
     return Image.fromarray(imgArrayD.astype(np.uint8))
 # ----------------------------------------------------------------------
-# array = np.array([[0,0,1,1,1,1],
-#                [0,0,1,1,1,1],
-#                [1,1,1,1,1,1],
-#                [1,1,1,1,1,1],
-#                [1,1,1,1,0,0],
-#                [1,1,1,1,0,0]], dtype=np.uint8)
-
-# kernel = np.array ([[0, 1, 0],
-#                     [1, 1, 1],
-#                     [0, 1, 0]], dtype = np.uint8)
-
-
-# print(array)
-
-# #image will be padded with one zeros around
-# result_erosion = ErosionArray(array, kernel)
-# result_dilation = DilationArray(array, kernel)
-# print('result_erosion',result_erosion)
-# print('result_dilation',result_dilation)

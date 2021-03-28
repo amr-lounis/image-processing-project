@@ -5,7 +5,7 @@ import functions as fn
 def Show_images(_list,_title="") -> None:
     import matplotlib.pyplot as plt
     n: int = len(_list)
-    f =  plt.figure(figsize=(3*len(_list),3))
+    f =  plt.figure(figsize=(5*len(_list),5))
     f.suptitle(_title, fontsize=16)
     for i in range(n):
         f.add_subplot(1, n, i + 1)
@@ -80,20 +80,20 @@ def main() -> None:
     print("----------------------------------------- red Image origine")
     path1 = 'images/001_1_1.bmp'
     # path1 = 'images/01.bmp'
-    # path2 = 'images/001_1_2.bmp'
+    path2 = 'images/001_1_2.bmp'
     img1 = fn.ConvertImage_2d(Image.open(path1))
-    # img2 = fn.ConvertImage_2d(Image.open(path2))
+    img2 = fn.ConvertImage_2d(Image.open(path2))
     
-    # print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    # HistogramShow(img1 , "original picture")
+    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
+    HistogramShow(img1 , "original picture")
     # print("----------------------------------------- Lissage des images : Filter Show")
     # FilterImageShow(img1)
     # print("----------------------------------------- Amélioration du contraste : Contrast Range")
     # ContrastRangeShow(img1,30,220)
     # print("----------------------------------------- Amélioration du contraste")
     # ContrastShow(img1)
-    print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
-    # imgContrastInvers = fn.ContrastInvers(img1)
+    # print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
+    imgContrastInvers = fn.ContrastInvers(img1)
     imgBiColor = fn.ConvertImage_BiColor(img1,70)
     HistogramShow(imgBiColor , " image Bi Color")
     
