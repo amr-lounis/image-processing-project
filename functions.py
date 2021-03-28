@@ -203,7 +203,6 @@ def DilationArray(image, kernel):
         horizontal_pos = 0
         while horizontal_pos <= horizontal_window:
             dilation_flag = False
-            erosion_flag = False
             for i in range(kernel.shape[0]):      # <<< MODIFIED
                 for j in range(kernel.shape[1]):  # <<< MODIFIED
                     if kernel[i][j] == 1:  
