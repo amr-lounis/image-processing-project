@@ -25,7 +25,7 @@ def ContrastShow(_img) -> None:
     imgOut = fn.ContrastLinear(_img,2,0)
     Show_images([_img,imgOut],"Contrast Linear")
     
-    imgOut = fn.ContrastInvers(_img)
+    imgOut = fn.ContrastInvers_255(_img)
     Show_images([_img,imgOut],"Contrast Invers")
     
 def MatchingShow(_img1,_img2) -> None:
@@ -93,8 +93,8 @@ def main() -> None:
     # print("----------------------------------------- Amélioration du contraste")
     # ContrastShow(img1)
     # print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
-    imgContrastInvers = fn.ContrastInvers(img1)
-    imgBiColor = fn.ConvertImage_BiColor(img1,70)
+    imgBiColor = fn.ConvertImage_BiColor(img1,60) # select pupil with color black = بؤبؤ العين
+    imgBiColor = fn.ContrastInvers_BiC(imgBiColor) 
     HistogramShow(imgBiColor , " image Bi Color")
     
     kernel = np.array ([[0, 1, 1, 1, 0],

@@ -2,8 +2,8 @@ import numpy as np
 from PIL import Image
 
 # ****************************************************************************
-import os
 def FilesYield(_dir_path,_extension):
+    import os
     for root, dirs, files in os.walk(os.path.abspath(_dir_path)): 
         for file in files:
             file = str(file)
@@ -18,8 +18,8 @@ def Hexencode(rgb):
     b=rgb[2]
     return '#%02x%02x%02x' % (r,g,b)
 
+# Convert a Matplotlib figure to a PIL Image and return it
 def fig2img(fig):
-    """Convert a Matplotlib figure to a PIL Image and return it"""
     import io
     buf = io.BytesIO()
     fig.savefig(buf)
@@ -66,7 +66,7 @@ def GetMatchingImageValue(_img1,_img2):
     return imgOut , len(good)
 
 # ****************************************************************************
-def ContrastLinear(_img,_b,_a):
+def ContrastLinear255(_img,_b,_a):
     imgArray = np.array(_img)
     
     x=_b* imgArray + _a
@@ -74,10 +74,18 @@ def ContrastLinear(_img,_b,_a):
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
 
-def ContrastInvers(_img):
+def ContrastInvers_255(_img):
     imgArray = np.array(_img)
     
     x=255- imgArray
+    
+    imgout=Image.fromarray(x.astype(np.uint8))
+    return imgout
+
+def ContrastInvers_BiC(_img):
+    imgArray = np.array(_img)
+    
+    x=1- imgArray
     
     imgout=Image.fromarray(x.astype(np.uint8))
     return imgout
