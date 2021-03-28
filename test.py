@@ -1,4 +1,5 @@
 from PIL import Image
+import numpy as np
 import functions as fn
 
 def Show_images(_list,_title="") -> None:
@@ -39,7 +40,7 @@ def ContrastRangeShow(_img,_min,_max) -> None:
     Show_images([_img,h1,imgOut,h2],"Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) )
     
 def FilterImageShow(_img) -> None:
-    import numpy as np
+
     filte_v = np.array([[-1, 0, 1],
                       [-2, 0, 2],
                       [-1, 0, 1 ]
@@ -67,38 +68,49 @@ def FilterImageShow(_img) -> None:
 # 1 Egalisation d’histogramme = OK
 # 2 Lissage des images = smoothing = OK
 # 3 Amélioration du contraste = Contrast enhancement = OK
+# 5 Opérations morphologiques = OK
 # 6 Détecteur SIFT OK
 # 7 Descripteur SIFT OK
 # 8 Distance euclidienne OK
 
 # 4 Segmentation par clustering NON
-# 5 Opérations morphologiques = 50/100
 # ----------------------------------------- 
 
 def main() -> None:
     print("----------------------------------------- red Image origine")
     path1 = 'images/001_1_1.bmp'
-    path2 = 'images/001_1_2.bmp'
+    # path1 = 'images/01.bmp'
+    # path2 = 'images/001_1_2.bmp'
     img1 = fn.ConvertImage_2d(Image.open(path1))
-    img2 = fn.ConvertImage_2d(Image.open(path2))
+    # img2 = fn.ConvertImage_2d(Image.open(path2))
     
-    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    HistogramShow(img1 , "original picture")
-    print("----------------------------------------- Lissage des images : Filter Show")
-    FilterImageShow(img1)
-    print("----------------------------------------- Amélioration du contraste : Contrast Range")
-    ContrastRangeShow(img1,30,220)
-    print("----------------------------------------- Amélioration du contraste")
-    ContrastShow(img1)
+    # print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
+    # HistogramShow(img1 , "original picture")
+    # print("----------------------------------------- Lissage des images : Filter Show")
+    # FilterImageShow(img1)
+    # print("----------------------------------------- Amélioration du contraste : Contrast Range")
+    # ContrastRangeShow(img1,30,220)
+    # print("----------------------------------------- Amélioration du contraste")
+    # ContrastShow(img1)
     print("----------------------------------------- Opérations morphologiques : Histogram BiColor")
-    imgBiColor = fn.ConvertImage_BiColor(img1,50)
-    HistogramShow(imgBiColor , " Bi Color")
-
-    imgOut = fn.ContrastInvers(imgBiColor)
-    Show_images([img1,imgBiColor,imgOut],"tetaps")
+    # imgContrastInvers = fn.ContrastInvers(img1)
+    imgBiColor = fn.ConvertImage_BiColor(img1,70)
+    HistogramShow(imgBiColor , " image Bi Color")
     
-    print("----------------------------------------- SIFT : Matching Show")
-    MatchingShow(img1,img2)
+    kernel = np.array ([[0, 1, 1, 1, 0],
+                        [1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1],
+                        [0, 1, 1, 1, 0]], dtype = np.uint8)
+    print("----------------------------------------- Opérations morphologiques :Erosion")
+    imgoutErosion =fn.ErosionImage(imgBiColor,kernel)
+    HistogramShow(imgoutErosion , " Erosion")
+    print("----------------------------------------- Opérations morphologiques :Dilation")
+    imgoutDilation =fn.DilationImage(imgBiColor,kernel)
+    HistogramShow(imgoutDilation , " Dilation")
+    
+    # print("----------------------------------------- SIFT : Matching Show")
+    # MatchingShow(img1,img2)
 
     
 main()
