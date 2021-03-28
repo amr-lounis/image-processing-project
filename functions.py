@@ -175,27 +175,14 @@ def add_padding(image, padding, value):
 # ----------------------------------------------------------------------
 def ErosionArray(image, kernel):
     img_operated = image.copy() #this will be the image
-
-    padding_value = 0           # <<< ADDED
-    if True:  # <<< ADDED
-        padding_value = 1       # <<< ADDED
-    padded = add_padding(image, 1, padding_value)  # <<< MODIFIED
+    padded = add_padding(image, 1, 1)  # <<< MODIFIED
     vertical_window = padded.shape[0] - kernel.shape[0] #final vertical window position
     horizontal_window = padded.shape[1] - kernel.shape[1] #final horizontal window position
-
-    #start with vertical window at 0 position
     vertical_pos = 0
-
-    #sliding the window vertically
     while vertical_pos <= vertical_window:
         horizontal_pos = 0
-
-        #sliding the window horizontally
         while horizontal_pos <= horizontal_window:
-            dilation_flag = False
             erosion_flag = False
-
-            #gives the index position of the box
             for i in range(kernel.shape[0]):      # <<< MODIFIED
                 for j in range(kernel.shape[1]):  # <<< MODIFIED
                     if kernel[i][j] == 1:         # <<< ADDED
@@ -205,65 +192,36 @@ def ErosionArray(image, kernel):
                             if padded[vertical_pos+i][horizontal_pos+j] == 0:  # <<< MODIFIED
                                 erosion_flag = True                            # <<< MODIFIED
                                 break
-
-                #if opertion is erosion and there is no match found, break the first 'for' loop
-                if True and erosion_flag:         # <<< MODIFIED
+                if erosion_flag:         # <<< MODIFIED
                     img_operated[vertical_pos, horizontal_pos] = 0  # <<< ADDED
                     break
 
             horizontal_pos += 1
-
-        #increase the vertical window position
         vertical_pos += 1
-
     return img_operated
 # ----------------------------------------------------------------------
 def DilationArray(image, kernel):
-    img_operated = image.copy() #this will be the image
-
-    padding_value = 0           # <<< ADDED
-    if False:  # <<< ADDED
-        padding_value = 1       # <<< ADDED
-    padded = add_padding(image, 1, padding_value)  # <<< MODIFIED
+    img_operated = image.copy() #this will be the image  # <<< ADDED
+    padded = add_padding(image, 1, 0)  # <<< MODIFIED
     vertical_window = padded.shape[0] - kernel.shape[0] #final vertical window position
     horizontal_window = padded.shape[1] - kernel.shape[1] #final horizontal window position
-
-    #start with vertical window at 0 position
     vertical_pos = 0
-
-    #sliding the window vertically
     while vertical_pos <= vertical_window:
         horizontal_pos = 0
-
-        #sliding the window horizontally
         while horizontal_pos <= horizontal_window:
             dilation_flag = False
             erosion_flag = False
-
-            #gives the index position of the box
             for i in range(kernel.shape[0]):      # <<< MODIFIED
                 for j in range(kernel.shape[1]):  # <<< MODIFIED
-                    if kernel[i][j] == 1:         # <<< ADDED
-                        #First Case
-                        if False:
-                            #if we find 0, then break the second loop
-                            if padded[vertical_pos+i][horizontal_pos+j] == 0:  # <<< MODIFIED
-                                erosion_flag = True                            # <<< MODIFIED
-                                break
-                        #if we find 1, then break the second loop
+                    if kernel[i][j] == 1:  
                         if padded[vertical_pos+i][horizontal_pos+j] == 1:  # <<< MODIFIED
                             dilation_flag = True
                             break
-
-                #if operation is dilation and we find a match, then break the first 'for' loop 
-                if True and dilation_flag:       # <<< FIXED
+                if dilation_flag:       # <<< FIXED
                     img_operated[vertical_pos, horizontal_pos] = 1
                     break
             horizontal_pos += 1
-
-        #increase the vertical window position
         vertical_pos += 1
-
     return img_operated
 # ----------------------------------------------------------------------
 def ErosionImage(_image, kernel):

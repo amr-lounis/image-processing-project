@@ -53,9 +53,14 @@ def ShowLissage():
         imageIn = Image.open(filename)
         imageIn = fn.ConvertImage_2d(imageIn)
         
-        filter0 = np.array([[1 / 9, 1 / 9, 1 / 9],
+        filter0 = np.array(
+                 [[1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9],
                   [1 / 9, 1 / 9, 1 / 9]])
+        filter0 = np.array(
+                 [[0    , 1 / 9, 0      ],
+                  [1 / 9, 5 / 9, 1 / 9],
+                  [0    , 1 / 9,0       ]])
          
         img = fn.FilterImage(imageIn,filter0)
         
