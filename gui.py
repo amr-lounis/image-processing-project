@@ -251,6 +251,12 @@ scale1.pack()
 """  ***************************************************************************** Frame SIFT """ 
 frame8 = tk.Frame(root)
 frame8.pack()
+def trining(_v):
+    files = filedialog.askopenfilenames()
+    # fn.databaseCreate(files)
+    fn.SegmentationAll(files)
+    
+creteButton(frame8,"select files ",trining,1)
 # ----------------------------------------------------
 
 

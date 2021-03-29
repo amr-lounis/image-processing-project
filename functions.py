@@ -1,7 +1,9 @@
 import numpy as np
+import os
+import io
+from PIL import ImageDraw
 # ****************************************************************************
 def FilesYield(_dir_path,_extension):
-    import os
     for root, dirs, files in os.walk(os.path.abspath(_dir_path)): 
         for file in files:
             file = str(file)
@@ -12,7 +14,6 @@ def Files(_dir_path,_extension):
 
 # ----------------------------------------------------------------------
 def Convert_fig_img(fig):
-    import io
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
@@ -20,7 +21,6 @@ def Convert_fig_img(fig):
     return img
 # ----------------------------------------------------------------------
 def CropEllipse(_img,_x,_y,_r):  
-    from PIL import ImageDraw
     mask = Image.new('L', _img.size)
     mask_draw = ImageDraw.Draw(mask)
     width, height = _img.size
@@ -33,26 +33,24 @@ def CropEllipse(_img,_x,_y,_r):
 # ----------------------------------------------------------------------
 def Convert_3d_2d_Array(imgArray):
     if len(imgArray.shape) == 2:
-        print("------------------------------------------------- Array 2d")
+        # print("------------------------------------------------- Array 2d")
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
-        print("matrix 2 D","row",n_line,"col",n_cols)
+        # print("matrix 2 D","row",n_line,"col",n_cols)
         return imgArray
     
     elif len(imgArray.shape) == 3:
-        print("------------------------------------------------- Array 3d")
+        # print("------------------------------------------------- Array 3d")
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
         n_3 = imgArray.shape[2]
-        print("matrix 3 D","row",n_line,"col",n_cols,"d_3",n_3)
+        # print("matrix 3 D","row",n_line,"col",n_cols,"d_3",n_3)
         matrix2D = np.zeros((n_line,n_cols), np.uint64)
         for i in range(0,n_line):
             for j in range(0,n_cols):
                 val= int((imgArray[i,j,0]+imgArray[i,j,1]+imgArray[i,j,2])/3)
                 matrix2D[i,j]= val   
         return matrix2D
-    elif len(imgArray.shape) == 4:
-        print("------------------------------------------------- Array 4d")
     else:
         print("len(imgArray.shape):",len(imgArray.shape))
 # ----------------------------------------------------------------------
@@ -235,7 +233,7 @@ def Get_Keypoints_Des_Array(_imgArray):
     # imgOut = cv2.drawKeypoints(img,kp,None,color=(0,255,0), flags=0)
     return kp,des,_imgArray
 
-# ----------------------------------------------------------------------Descripteur SIFT
+# ---------------------------------------------------------------------- DescripteurDistance  SIFT
 def GetMatching(des1,des2):
     FLANN_INDEX_KDTREE = 1
     index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
@@ -249,7 +247,7 @@ def GetMatching(des1,des2):
             goodMatchs.append(m)
     return goodMatchs
 
-# ----------------------------------------------------------------------Distance euclidienne
+# ---------------------------------------------------------------------- all in one
 def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
     kp1, des1 , img1 = Get_Keypoints_Des_Array(_imgArray1)
     kp2, des2 , img2 = Get_Keypoints_Des_Array(_imgArray2)
@@ -258,4 +256,43 @@ def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
     # print ("matches found : %d" % (len(good)))
     imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
     return imgOut , len(good)
+
+import pickle
+def save_object(obj, _filename):
+    open_file = open(_filename, "wb")
+    pickle.dump(obj, open_file)
+    open_file.close()
+        
+def databaseCreate(_list):
+    sift = cv2.xfeatures2d.SIFT_create()
+    listSIFT = []
+    for f in _list:
+        try:
+            numberP = os.path.basename(f)[0:3]
+            imgArray = ReadImage2d_Array(f)
+            kp, des = sift.detectAndCompute(imgArray,None)
+            listSIFT.append([numberP,f,des])
+        except:
+            print("Error read file:",f)
+      
+    print("create database.pkl",len(listSIFT))
+    save_object(listSIFT,"database_sift.pkl")
+
+def SegmentationAll(_list):
+    for f in _list:
+        try:
+            name = os.path.basename(f)
+            imgArray = ReadImage2d_Array(f)
+            iris_x,iris_y,iris_r = iris(imgArray)
+            pupil_x,pupil_y,pupil_r = pupil(imgArray)
+            
+            imgArray = zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
+            imgArray = zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
+            
+            img = Convert_Array2Image(imgArray)
+            
+            img.save("iris_Segmentation\\"+name)
+        except:
+            print("Error Save file:",f)
+      
 # ****************************************************************************
