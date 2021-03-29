@@ -125,8 +125,8 @@ def Filter_Array(_arrayIn,_filter3x3):
     return arrayOut
 
 # ---------------------------------------------------------------------- Opérations morphologiques
-def Convert_BiColor_Array(imgArray,_seullage):
-    return np.where(imgArray > _seullage, 1, 0)
+def Convert_BiColor_Array(imgArray,_thresholding):
+    return np.where(imgArray > _thresholding, 1, 0)
 # ---------------------------------------------------------------------- Opérations morphologiques
 def Erosion_Array(image, kernel):
     img_operated = image.copy() #this will be the image
