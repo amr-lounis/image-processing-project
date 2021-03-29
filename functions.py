@@ -1,6 +1,4 @@
 import numpy as np
-from PIL import Image
-
 # ****************************************************************************
 def FilesYield(_dir_path,_extension):
     import os
@@ -12,111 +10,17 @@ def FilesYield(_dir_path,_extension):
 def Files(_dir_path,_extension):
     return [f for f in FilesYield(_dir_path,_extension)]
 
-def Hexencode(rgb):
-    r=rgb[0]
-    g=rgb[1]
-    b=rgb[2]
-    return '#%02x%02x%02x' % (r,g,b)
-
-# Convert a Matplotlib figure to a PIL Image and return it
-def fig2img(fig):
+# ----------------------------------------------------------------------
+def Convert_fig_img(fig):
     import io
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
     img = Image.open(buf)
     return img
-# ****************************************************************************
 
-import cv2 as cv2
-def GetKeypointsDesImg(_img):
-    # read image
-    # img = cv2.imread(p_path, 0)
-    img = np.array(_img) 
-    # Initiate SIFT detector
-    sift = cv2.xfeatures2d.SIFT_create()
-    # find the keypoints and descriptors with SIFT
-    kp, des = sift.detectAndCompute(img,None)
-    # # draw keypoint
-    # imgOut = cv2.drawKeypoints(img,kp,None,color=(0,255,0), flags=0)
-    # cv2.imshow('keypoint', imgOut)
-    # plt.imshow(imgOut, 'gray'),plt.show()
-    return kp,des,img
-
-def GetMatching(des1,des2):
-    FLANN_INDEX_KDTREE = 1
-    index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
-    search_params = dict(checks = 50)
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
-    matches = flann.knnMatch(des1, des2, k=2)
-    # store all the good matches as per Lowe's ratio test.
-    goodMatchs = []
-    for m,n in matches:
-        if m.distance < 0.7*n.distance:
-            goodMatchs.append(m)
-    return goodMatchs
-
-def GetMatchingImageValue(_img1,_img2):
-    kp1, des1 , img1 = GetKeypointsDesImg(_img1)
-    kp2, des2 , img2 = GetKeypointsDesImg(_img2)
-    good = GetMatching(des1,des2)
-
-    # print ("matches found : %d" % (len(good)))
-    imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
-    return imgOut , len(good)
-
-# ****************************************************************************
-def ContrastLinear255(_img,_b,_a):
-    imgArray = np.array(_img)
-    
-    x=_b* imgArray + _a
-    
-    imgout=Image.fromarray(x.astype(np.uint8))
-    return imgout
-
-def ContrastInvers_255(_img):
-    imgArray = np.array(_img)
-    
-    x=255- imgArray
-    
-    imgout=Image.fromarray(x.astype(np.uint8))
-    return imgout
-
-def ContrastInvers_BiC(_img):
-    imgArray = np.array(_img)
-    
-    x=1- imgArray
-    
-    imgout=Image.fromarray(x.astype(np.uint8))
-    return imgout
-
-def ContrastLog(_img):
-    imgArray = np.array(_img)
-    
-    x = np.abs(np.log(imgArray+1.1)*255 /
-               np.log(np.max(imgArray+1.1)))
-    
-    imgout=Image.fromarray(x.astype(np.uint8))
-    return imgout
-
-def ContrastRange(_img,_min,_max):
-    imgArray = np.array(_img)
-    # print("max",np.max(imgArray),"min",np.min(imgArray))   
-    for i in range(0,imgArray.shape[0]):
-        for j in range(0,imgArray.shape[1]):
-            imgArray[i][j]= int(255/(_max-_min) * (imgArray[i][j] - _min ))
-            if imgArray[i][j] > 255:
-                imgArray[i][j] = 255
-            elif imgArray[i][j] <0:
-                imgArray[i][j] = 0
-    print("max",np.max(imgArray),"min",np.min(imgArray))        
-    imgout=Image.fromarray(imgArray.astype(np.uint8))     
-    return imgout
-# ****************************************************************************
-
-def ConvertImage_2d(_img):
-    imgArray = np.array(_img)
-        
+# ----------------------------------------------------------------------
+def Convert_3d_2d_Array(imgArray):
     if len(imgArray.shape) == 2:
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
@@ -130,23 +34,49 @@ def ConvertImage_2d(_img):
         for i in range(0,n_line):
             for j in range(0,n_cols):
                 val= int((imgArray[i,j,0]+imgArray[i,j,1]+imgArray[i,j,2])/3)
-                matrix2D[i,j]= val
-                
-    imgout=Image.fromarray(imgArray.astype(np.uint8))     
-    return imgout
+                matrix2D[i,j]= val   
+    return imgArray
+# ----------------------------------------------------------------------
+def ReadImage2d_Array(_path):
+    image = Image.open(_path)
+    imgArray = np.array(image)  
+    return Convert_3d_2d_Array(imgArray)
+# ----------------------------------------------------------------------
+from PIL import Image
+def Convert_Array2Image(_imgArray):
+    return Image.fromarray(_imgArray.astype(np.uint8))
+# ---------------------------------------------------------------------- Contrast
+def ContrastLinear_Array(imgArray,_b,_a):
+    return _b* imgArray + _a
 
-def ConvertImage_BiColor(_img,_seullage):
-    imgArray = np.array(_img)
-    
-    mt_bi = np.where(imgArray > _seullage, 1, 0)
-    
-    return Image.fromarray(mt_bi.astype(np.uint8))
+# ---------------------------------------------------------------------- Contrast
+def ContrastInvers_255_Array(imgArray):
+    return 255- imgArray
 
-def Histogram_Image(_img):
+# ---------------------------------------------------------------------- Contrast
+def ContrastInvers_BiC_Array(imgArray):
+    return 1- imgArray
+
+# ---------------------------------------------------------------------- Contrast
+def ContrastLog_Array(imgArray):
+    return np.abs(np.log(imgArray+1.1)*255 /
+               np.log(np.max(imgArray+1.1)))
+
+# ---------------------------------------------------------------------- Contrast
+def ContrastRange_Array(imgArray,_min,_max): 
+    imgArray =  imgArray.copy()
+    for i in range(0,imgArray.shape[0]):
+        for j in range(0,imgArray.shape[1]):
+            imgArray[i][j]= int(255/(_max-_min) * (imgArray[i][j] - _min ))
+            if imgArray[i][j] > 255:
+                imgArray[i][j] = 255
+            elif imgArray[i][j] <0:
+                imgArray[i][j] = 0
+    return imgArray
+
+# ----------------------------------------------------------------------  Egalisation d’histogramme
+def Histogram_Array(imgArray):
     from matplotlib.figure import Figure
-
-    imgArray = np.array(_img)
-    
     y = np.zeros(256, np.uint32)
     for i in range(0,imgArray.shape[0]):
         for j in range(0,imgArray.shape[1]):
@@ -159,27 +89,27 @@ def Histogram_Image(_img):
     ax.set_title('histogram')
     ax.plot(range(0,256),y,'black');
 
-    img = fig2img(fig)
-    # img.show()
+    img = Convert_fig_img(fig)
     return img;
 
-def FilterImage(_image,_filter3x3):
-    arrayIn= np.array(_image)
-    arrayOut = np.zeros(arrayIn.shape,np.uint8)
-    
-    for ligne in range(1,arrayIn.shape[0]-1):
-        for col in range(1,arrayIn.shape[1]-1):
+# ---------------------------------------------------------------------- Lissage des images
+def Filter_Array(_arrayIn,_filter3x3):
+    arrayOut = np.zeros(_arrayIn.shape,np.uint8) 
+    for ligne in range(1,_arrayIn.shape[0]-1):
+        for col in range(1,_arrayIn.shape[1]-1):
             # On calcule la somme 
             somme = 0
             for l in range(3):
                 for c in range(3):
-                    somme += _filter3x3[l,c]*arrayIn[ligne-1+l,col-1+c]
+                    somme += _filter3x3[l,c]*_arrayIn[ligne-1+l,col-1+c]
             arrayOut[ligne,col] = somme
+    return arrayOut
 
-    return Image.fromarray(arrayOut.astype(np.uint8))
-
-# ----------------------------------------------------------------------
-def ErosionArray(image, kernel):
+# ---------------------------------------------------------------------- Opérations morphologiques
+def Convert_BiColor_Array(imgArray,_seullage):
+    return np.where(imgArray > _seullage, 1, 0)
+# ---------------------------------------------------------------------- Opérations morphologiques
+def Erosion_Array(image, kernel):
     img_operated = image.copy() #this will be the image
     vertical_window = image.shape[0] - kernel.shape[0] #final vertical window position
     horizontal_window = image.shape[1] - kernel.shape[1] #final horizontal window position
@@ -201,8 +131,9 @@ def ErosionArray(image, kernel):
             horizontal_pos += 1
         vertical_pos += 1
     return img_operated
-# ----------------------------------------------------------------------
-def DilationArray(image, kernel):
+
+# ---------------------------------------------------------------------- Opérations morphologiques
+def Dilation_Array(image, kernel):
     img_operated = image.copy() #this will be the image  # <<< ADDED
     vertical_window = image.shape[0] - kernel.shape[0] #final vertical window position
     horizontal_window = image.shape[1] - kernel.shape[1] #final horizontal window position
@@ -223,14 +154,63 @@ def DilationArray(image, kernel):
             horizontal_pos += 1
         vertical_pos += 1
     return img_operated
-# ----------------------------------------------------------------------
-def ErosionImage(_image, kernel):
-    imgArray = np.array(_image)
-    imgArrayE = ErosionArray(imgArray,kernel)
-    return Image.fromarray(imgArrayE.astype(np.uint8))
-# ----------------------------------------------------------------------
-def DilationImage(_image, kernel):
-    imgArray = np.array(_image)
-    imgArrayD = DilationArray(imgArray,kernel)
-    return Image.fromarray(imgArrayD.astype(np.uint8))
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------- Segmentation
+def pupil(_ArrayBiC,valeuFind = 1):
+    n_columns =_ArrayBiC.shape[1]
+    n_rows =_ArrayBiC.shape[0]
+    
+    sumX = 0
+    sumY = 0
+    sumN = 0
+    for y in range(0,n_rows):
+        for x in range(0,n_columns):
+            if _ArrayBiC[y][x] == valeuFind:
+                sumX = sumX + x
+                sumY = sumY + y
+                sumN = sumN + 1
+    
+    pupilX = int(sumX/sumN)
+    pupilY = int(sumY/sumN)
+    pupilR = int(np.sqrt(sumN/np.pi) ) #Area of a disk =  πr^2
+    return pupilX,pupilY,pupilR
+# ---------------------------------------------------------------------- Segmentation
+def iris(_ArrayBiC,valeuFind = 1):
+    x,y,r =pupil(_ArrayBiC,valeuFind)
+    return x,y,r*4
+
+# ********************************************************************** Need opencv
+# ---------------------------------------------------------------------- Détecteur SIFT
+import cv2 as cv2
+def Get_Keypoints_Des_Array(_imgArray):
+    # Initiate SIFT detector
+    sift = cv2.xfeatures2d.SIFT_create()
+    # find the keypoints and descriptors with SIFT
+    kp, des = sift.detectAndCompute(_imgArray,None)
+    # # draw keypoint
+    # imgOut = cv2.drawKeypoints(img,kp,None,color=(0,255,0), flags=0)
+    return kp,des,_imgArray
+
+# ----------------------------------------------------------------------Descripteur SIFT
+def GetMatching(des1,des2):
+    FLANN_INDEX_KDTREE = 1
+    index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+    search_params = dict(checks = 50)
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    matches = flann.knnMatch(des1, des2, k=2)
+    # store all the good matches as per Lowe's ratio test.
+    goodMatchs = []
+    for m,n in matches:
+        if m.distance < 0.7*n.distance:
+            goodMatchs.append(m)
+    return goodMatchs
+
+# ----------------------------------------------------------------------Distance euclidienne
+def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
+    kp1, des1 , img1 = Get_Keypoints_Des_Array(_imgArray1)
+    kp2, des2 , img2 = Get_Keypoints_Des_Array(_imgArray2)
+    good = GetMatching(des1,des2)
+
+    # print ("matches found : %d" % (len(good)))
+    imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
+    return imgOut , len(good)
+# ****************************************************************************
