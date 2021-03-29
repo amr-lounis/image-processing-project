@@ -4,7 +4,10 @@ from tkinter import filedialog
 import functions as fn
 import tkinter as tk
 import numpy as np
-    
+
+# ---------------------------------------------------- 
+def creteButton(_frame,_name,_func,_v):
+   return tk.Button( _frame,text=_name,width = 20,padx = 20,command = lambda : _func(_v)).pack(side=tk.LEFT)
 # ----------------------------------------------------
 def CanvasInSet(_img):
     _img.thumbnail((600, 400), Image.ANTIALIAS)
@@ -16,6 +19,8 @@ def CanvasInSet(_img):
     
 # ----------------------------------------------------   
 def CanvasOutSet(_img):
+    global ImageOutput 
+    ImageOutput = _img
     _img.thumbnail((600, 400), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(_img)
     w, h = photo.width(), photo.height()
@@ -24,7 +29,7 @@ def CanvasOutSet(_img):
     v_canvas_output.create_image(0, 0, image=photo, anchor=tk.NW)
     
 # ----------------------------------------------------
-def getPath()-> None:
+def getPath(_v)-> None:
     filename = filedialog.askopenfilename()
     print("selected file : ",filename)
     v_path_input.delete(0,"end")
@@ -43,7 +48,7 @@ def ShowImage(filename):
         print("error show image")
         
 # ----------------------------------------------------
-def ShowHistogram():
+def ShowHistogram(_v):
     try:
         filename =v_pathVar_input.get()
         imgArray = fn.ReadImage2d_Array(filename) 
@@ -52,128 +57,133 @@ def ShowHistogram():
     except:
         print("error show image outout")
 # ----------------------------------------------------
-def ShowLissage(_filter):
+def ShowLissage(_v):
+    print("ShowLissage:",_v)
+    filter1 = np.array([
+        [0    , 1 / 9, 0      ],
+        [1 / 9, 5 / 9, 1 / 9],
+        [0    , 1 / 9,0       ]
+        ])
+    filter2 = np.array([
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9]
+        ])
+    filter3 = np.array([
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1 ]
+        ])
+    filter4 = np.array([
+        [-1, -2, -1],
+        [0, 0, 0],
+        [1, 2, 1 ]
+        ])
     try:
         filename =v_pathVar_input.get()
-        imgArray = fn.ReadImage2d_Array(filename)        
-        imgArrayOut = fn.Filter_Array(imgArray,_filter)
+        imgArray = fn.ReadImage2d_Array(filename)  
+        
+        if   _v == 1 :
+           imgArrayOut = fn.Filter_Array(imgArray,filter1)
+        elif _v == 2 :
+            imgArrayOut = fn.Filter_Array(imgArray,filter2)
+        elif _v == 3 :
+            imgArrayOut = fn.Filter_Array(imgArray,filter3)
+        elif _v == 4 :
+            imgArrayOut = fn.Filter_Array(imgArray,filter4)
+        else:
+            print("error Filter")
+        
         imgOut = fn.Convert_Array2Image(imgArrayOut)
         CanvasOutSet(imgOut)
     except:
         print("error show image outout")
         
-# ----------------------------------------------------       
-def Segmentation():
+# ----------------------------------------------------
+def Segmentation(_v):
     try:
         filename =v_pathVar_input.get()
-        imgArray = fn.ReadImage2d_Array(filename)       
-
-        iris_x,iris_y,iris_r = fn.iris(imgArray)
-        pupil_x,pupil_y,pupil_r = fn.pupil(imgArray)
+        imgArray = fn.ReadImage2d_Array(filename)   
         
-        imgArray = fn.zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
-        imgArray = fn.zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
-        
-        img = fn.Convert_Array2Image(imgArray)
-
-        CanvasOutSet(img)
+        if   _v == 1 :
+            iris_x,iris_y,iris_r = fn.iris(imgArray)
+            pupil_x,pupil_y,pupil_r = fn.pupil(imgArray)
+            
+            imgArray = fn.zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
+            imgArray = fn.zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
+            
+            img = fn.Convert_Array2Image(imgArray)
+    
+            CanvasOutSet(img)
+        elif _v == 2 :
+            filename = filedialog.asksaveasfilename(defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
+            if not filename:
+                return
+            
+            global ImageOutput 
+            print("save as :",filename)
+            ImageOutput.save(filename)
+        else:
+            print("error Filter")
+    
         # v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
         # v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
     except:
         print("error show image outout")
-        
-# ----------------------------------------------------
+# ----------------------------------------------------       
+"""  ***************************************************************************** ROOT """ 
 root = tk.Tk()
 root.geometry("800x600+300+50")
 root.title('iris recognition ')
-# ***************************************************************************** Select Image
+ImageOutput = None
+v = tk.IntVar()
+v.set(1)
+"""  ***************************************************************************** Frame Select Image """ 
 frame1 = tk.Frame(root)
-frame1.grid(row=1,column=0)
+frame1.pack()
 # ---------------------------------------------------- Button select image
-v_bt_path1= tk.Button(frame1,text="select image")
-v_bt_path1.grid(row=0,column=0)
-v_bt_path1.config(command = lambda : getPath()  )
-# ---------------------------------------------------- Entry path of image in
+creteButton(frame1,"Select",getPath,1)
+# # ---------------------------------------------------- Entry path of image in
 v_pathVar_input = tk.StringVar(frame1)
-v_path_input = tk.Entry(frame1,textvariable=v_pathVar_input,width=100)
+v_path_input = tk.Entry(frame1,textvariable=v_pathVar_input,width=50)
 v_path_input.bind("<Return>", lambda x: ShowImage(v_pathVar_input.get()))
-v_path_input.grid(row=0,column=1,columnspan=10)
-# ***************************************************************************** Canvas
+v_path_input.pack(side=tk.LEFT)
+
+"""  ***************************************************************************** Frame Canvas """ 
 frame2 = tk.Frame(root)
-frame2.grid(row=2,column=0)
+frame2.pack()
 # ---------------------------------------------------- Canvas in
 v_canvas_input=tk.Canvas(frame2, width=300, height=200, background='white')
 v_canvas_input.grid(row=0,column=0)
 # ---------------------------------------------------- Canvas Out
 v_canvas_output=tk.Canvas(frame2, width=300, height=200, background='white')
 v_canvas_output.grid(row=0,column=1)
-# ***************************************************************************** Histogram
+
+"""  ***************************************************************************** Frame Histogram """ 
 frame3 = tk.Frame(root)
-frame3.grid(row=3,column=0)
-# ---------------------------------------------------- Button calcule and draw Histogram
-v_bt_Histogram= tk.Button(frame3,text="Histogram")
-v_bt_Histogram.grid(row=0,column=0)
-v_bt_Histogram.config(command = lambda : ShowHistogram()  )
-# # ***************************************************************************** Lissage
+frame3.pack()
+creteButton(frame3,"Histogram",ShowHistogram,1)
+"""  ***************************************************************************** Frame Lissage """ 
 frame4 = tk.Frame(root)
-frame4.grid(row=4,column=0)
-# ---------------------------------------------------- filters
-filter1 = np.array([
-    [0    , 1 / 9, 0      ],
-    [1 / 9, 5 / 9, 1 / 9],
-    [0    , 1 / 9,0       ]
-    ])
-filter2 = np.array([
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9],
-    [1 / 9, 1 / 9, 1 / 9]
-    ])
-filter3 = np.array([
-    [-1, 0, 1],
-    [-2, 0, 2],
-    [-1, 0, 1 ]
-    ])
-filter4 = np.array([
-    [-1, -2, -1],
-    [0, 0, 0],
-    [1, 2, 1 ]
-    ])
-# ---------------------------------------------------- Button Lissage 1
-v_bt_Lissage1= tk.Button(frame4,text="Lissage 5/9")
-v_bt_Lissage1.grid(row=0,column=0)         
-v_bt_Lissage1.config(command = lambda : ShowLissage(filter1)  )
-# ---------------------------------------------------- Button Lissage 2
-v_bt_Lissage2= tk.Button(frame4,text="Lissage 1/9")
-v_bt_Lissage2.grid(row=0,column=1)
-v_bt_Lissage2.config(command = lambda : ShowLissage(filter2)  )
-# ---------------------------------------------------- Button Lissage 3
-v_bt_Lissage3= tk.Button(frame4,text="contours v")
-v_bt_Lissage3.grid(row=0,column=2)
-v_bt_Lissage3.config(command = lambda : ShowLissage(filter3)  )
-# ---------------------------------------------------- Button Lissage 4
-v_bt_Lissage4= tk.Button(frame4,text="contours h")
-v_bt_Lissage4.grid(row=0,column=3)
-v_bt_Lissage4.config(command = lambda : ShowLissage(filter4)  )
-# ----------------------------------------------------
-# ***************************************************************************** Amélioration du contraste
+frame4.pack()
+creteButton(frame4,"Lissage 5/9",ShowLissage,1)
+creteButton(frame4,"Lissage 1/9",ShowLissage,2)
+creteButton(frame4,"contours v",ShowLissage,3)
+creteButton(frame4,"contours h",ShowLissage,4)
+"""  ***************************************************************************** Frame Amélioration du contraste """ 
 frame5 = tk.Frame(root)
-frame5.grid(row=5,column=0)
-# ----------------------------------------------------
-# ***************************************************************************** Segmentation par clustering
-frame5 = tk.Frame(root)
-frame5.grid(row=6,column=0)
-# ----------------------------------------------------
-v_bt_Segmentation= tk.Button(frame5,text="Segmentation")
-v_bt_Segmentation.grid(row=0,column=0)
-v_bt_Segmentation.config(command = lambda : Segmentation()  )
-# ***************************************************************************** Opérations morphologiques
-frame5 = tk.Frame(root)
-frame5.grid(row=7,column=0)
-# ----------------------------------------------------
-# ***************************************************************************** SIFT
-frame5 = tk.Frame(root)
-frame5.grid(row=8,column=0)
-frame5.config(width=200,height=200,relief=tk.RIDGE)
+frame5.pack()
+"""  ***************************************************************************** Frame Segmentation par clustering """ 
+frame6 = tk.Frame(root)
+frame6.pack()
+creteButton(frame6,"Segmentation",Segmentation,1)
+creteButton(frame6,"Save",Segmentation,2)
+"""  *****************************************************************************  Frame Opérations morphologiques """ 
+frame7 = tk.Frame(root)
+frame7.pack()
+"""  ***************************************************************************** Frame SIFT """ 
+frame8 = tk.Frame(root)
+frame8.pack()
 # ----------------------------------------------------
 
 
