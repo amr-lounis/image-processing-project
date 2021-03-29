@@ -1,4 +1,4 @@
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageDraw
 from tkinter import filedialog
 
 import functions as fn
@@ -7,6 +7,7 @@ import numpy as np
     
 # ----------------------------------------------------
 def CanvasInSet(_img):
+    _img.thumbnail((600, 400), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(_img)
     w, h = photo.width(), photo.height()
     v_canvas_input.image = photo
@@ -15,6 +16,7 @@ def CanvasInSet(_img):
     
 # ----------------------------------------------------   
 def CanvasOutSet(_img):
+    _img.thumbnail((600, 400), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(_img)
     w, h = photo.width(), photo.height()
     v_canvas_output.image = photo
@@ -69,10 +71,14 @@ def Segmentation():
         iris_x,iris_y,iris_r = fn.iris(imgArray)
         pupil_x,pupil_y,pupil_r = fn.pupil(imgArray)
         
-        imgOut = fn.Convert_Array2Image(imgArray)
-        CanvasOutSet(imgOut)
-        v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
-        v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
+        imgArray = fn.zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
+        imgArray = fn.zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
+        
+        img = fn.Convert_Array2Image(imgArray)
+
+        CanvasOutSet(img)
+        # v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
+        # v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
     except:
         print("error show image outout")
         
@@ -153,17 +159,17 @@ v_bt_Lissage4.config(command = lambda : ShowLissage(filter4)  )
 frame5 = tk.Frame(root)
 frame5.grid(row=5,column=0)
 # ----------------------------------------------------
-# ***************************************************************************** Opérations morphologiques
-frame5 = tk.Frame(root)
-frame5.grid(row=6,column=0)
-# ----------------------------------------------------
 # ***************************************************************************** Segmentation par clustering
 frame5 = tk.Frame(root)
-frame5.grid(row=7,column=0)
+frame5.grid(row=6,column=0)
 # ----------------------------------------------------
 v_bt_Segmentation= tk.Button(frame5,text="Segmentation")
 v_bt_Segmentation.grid(row=0,column=0)
 v_bt_Segmentation.config(command = lambda : Segmentation()  )
+# ***************************************************************************** Opérations morphologiques
+frame5 = tk.Frame(root)
+frame5.grid(row=7,column=0)
+# ----------------------------------------------------
 # ***************************************************************************** SIFT
 frame5 = tk.Frame(root)
 frame5.grid(row=8,column=0)

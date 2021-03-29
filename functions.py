@@ -18,14 +18,29 @@ def Convert_fig_img(fig):
     buf.seek(0)
     img = Image.open(buf)
     return img
-
+# ----------------------------------------------------------------------
+def CropEllipse(_img,_x,_y,_r):  
+    from PIL import ImageDraw
+    mask = Image.new('L', _img.size)
+    mask_draw = ImageDraw.Draw(mask)
+    width, height = _img.size
+    print(width,height)
+    bbox =  (_x - _r, _y - _r, _x + _r, _y + _r)
+    mask_draw.ellipse( bbox,fill=255)
+    # add mask as alpha channel
+    _img.putalpha(mask)
+    return _img
 # ----------------------------------------------------------------------
 def Convert_3d_2d_Array(imgArray):
     if len(imgArray.shape) == 2:
+        print("------------------------------------------------- Array 2d")
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
         print("matrix 2 D","row",n_line,"col",n_cols)
-    else:
+        return imgArray
+    
+    elif len(imgArray.shape) == 3:
+        print("------------------------------------------------- Array 3d")
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
         n_3 = imgArray.shape[2]
@@ -35,7 +50,11 @@ def Convert_3d_2d_Array(imgArray):
             for j in range(0,n_cols):
                 val= int((imgArray[i,j,0]+imgArray[i,j,1]+imgArray[i,j,2])/3)
                 matrix2D[i,j]= val   
-    return imgArray
+        return matrix2D
+    elif len(imgArray.shape) == 4:
+        print("------------------------------------------------- Array 4d")
+    else:
+        print("len(imgArray.shape):",len(imgArray.shape))
 # ----------------------------------------------------------------------
 def ReadImage2d_Array(_path):
     image = Image.open(_path)
@@ -178,8 +197,24 @@ def pupil(_imgArray,_seullage = 50, valeuFind = 0):
 # ---------------------------------------------------------------------- Segmentation
 def iris(_imgArray,_seullage = 50, valeuFind = 0):
     x,y,r =pupil(_imgArray,_seullage,valeuFind)
-    return x,y,r*3
-
+    return x,y,r*2.5
+# ---------------------------------------------------------------------- Segmentation
+def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
+    _array = _array.copy()
+    for i in range(0,_array.shape[0]):
+        for j in range(0,_array.shape[1]):
+            if( (j-_x)**2 + (i-_y)**2 ) >= _r**2:
+                _array[i][j]=0
+    return _array
+# ---------------------------------------------------------------------- Segmentation             
+def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
+    _array = _array.copy()    
+    for i in range(0,_array.shape[0]):
+        for j in range(0,_array.shape[1]):
+            if( (j-_x)**2 + (i-_y)**2 ) <= _r**2:
+                _array[i][j]=0
+    return _array
+                
 # ********************************************************************** Need opencv
 # ---------------------------------------------------------------------- Détecteur SIFT
 import cv2 as cv2
