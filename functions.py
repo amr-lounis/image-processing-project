@@ -155,27 +155,29 @@ def Dilation_Array(image, kernel):
         vertical_pos += 1
     return img_operated
 # ---------------------------------------------------------------------- Segmentation
-def pupil(_ArrayBiC,valeuFind = 1):
-    n_columns =_ArrayBiC.shape[1]
-    n_rows =_ArrayBiC.shape[0]
+def pupil(_imgArray,_seullage = 50, valeuFind = 0):
+    n_columns =_imgArray.shape[1]
+    n_rows =_imgArray.shape[0]
     
+    imgBiC = np.where(_imgArray > _seullage, 1, 0)
+        
     sumX = 0
     sumY = 0
     sumN = 0
     for y in range(0,n_rows):
         for x in range(0,n_columns):
-            if _ArrayBiC[y][x] == valeuFind:
+            if imgBiC[y][x] == valeuFind:
                 sumX = sumX + x
                 sumY = sumY + y
                 sumN = sumN + 1
     
-    pupilX = int(sumX/sumN)
-    pupilY = int(sumY/sumN)
-    pupilR = int(np.sqrt(sumN/np.pi) ) #Area of a disk =  πr^2
-    return pupilX,pupilY,pupilR
+    X = int(sumX/sumN)
+    Y = int(sumY/sumN)
+    R = int(np.sqrt(sumN/np.pi) ) #Area of a disk =  πr^2
+    return X,Y,R
 # ---------------------------------------------------------------------- Segmentation
-def iris(_ArrayBiC,valeuFind = 1):
-    x,y,r =pupil(_ArrayBiC,valeuFind)
+def iris(_imgArray,_seullage = 50, valeuFind = 0):
+    x,y,r =pupil(_imgArray,_seullage,valeuFind)
     return x,y,r*3
 
 # ********************************************************************** Need opencv

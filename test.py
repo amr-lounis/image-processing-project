@@ -32,74 +32,74 @@ def main() -> None:
     imgArray1 = fn.ReadImage2d_Array(path1)
     imgArray2 = fn.ReadImage2d_Array(path2)
 
-    print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
-    h1 = fn.Histogram_Array(imgArray1)
-    Show_images([imgArray1,h1],"Histogram original picture")
+    # print("----------------------------------------- Egalisation d’histogramme  : Histogram origine")
+    # h1 = fn.Histogram_Array(imgArray1)
+    # Show_images([imgArray1,h1],"Histogram original picture")
 
-    print("----------------------------------------- Lissage des images : Filter Show")
-    filte_v = np.array([[-1, 0, 1],
-                      [-2, 0, 2],
-                      [-1, 0, 1 ]
-                      ])
+    # print("----------------------------------------- Lissage des images : Filter Show")
+    # filte_v = np.array([[-1, 0, 1],
+    #                   [-2, 0, 2],
+    #                   [-1, 0, 1 ]
+    #                   ])
     
-    filte_h = np.array([[-1, -2, -1],
-                      [0, 0, 0],
-                      [1, 2, 1 ]
-                      ])
+    # filte_h = np.array([[-1, -2, -1],
+    #                   [0, 0, 0],
+    #                   [1, 2, 1 ]
+    #                   ])
     
-    filter0 = np.array([[1 / 9, 1 / 9, 1 / 9],
-                  [1 / 9, 1 / 9, 1 / 9],
-                  [1 / 9, 1 / 9, 1 / 9]])
+    # filter0 = np.array([[1 / 9, 1 / 9, 1 / 9],
+    #               [1 / 9, 1 / 9, 1 / 9],
+    #               [1 / 9, 1 / 9, 1 / 9]])
 
-    imgOut = fn.Filter_Array(imgArray1,filter0)
-    Show_images([imgArray1,imgOut],"Filter Moyen")
+    # imgOut = fn.Filter_Array(imgArray1,filter0)
+    # Show_images([imgArray1,imgOut],"Filter Moyen")
         
-    imgOut = fn.Filter_Array(imgArray1,filte_h)
-    Show_images([imgArray1,imgOut],"Filter Horizontal")
+    # imgOut = fn.Filter_Array(imgArray1,filte_h)
+    # Show_images([imgArray1,imgOut],"Filter Horizontal")
     
-    imgOut = fn.Filter_Array(imgArray1,filte_v)
-    Show_images([imgArray1,imgOut],"Filter vertical")
-    
-    
-    print("----------------------------------------- Amélioration du contraste : Contrast Range")
-    _min,_max = 30,220
-    h1 = fn.Histogram_Array(imgArray1)
-    imgOut = fn.ContrastRange_Array(imgArray1,_min,_max)
-    h2 = fn.Histogram_Array(imgOut)
-    Show_images([imgArray1,h1,imgOut,h2],"Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) )
+    # imgOut = fn.Filter_Array(imgArray1,filte_v)
+    # Show_images([imgArray1,imgOut],"Filter vertical")
     
     
-    print("----------------------------------------- Amélioration du contraste")
-    imgOut1 = fn.ContrastLog_Array(imgArray1)
-    imgOut2 = fn.ContrastLinear_Array(imgArray1,2,0)
-    imgOut3 = fn.ContrastInvers_255_Array(imgArray1)
-    Show_images([imgArray1,imgOut1,imgOut2,imgOut3],"Contrast Log Linear Invers")
+    # print("----------------------------------------- Amélioration du contraste : Contrast Range")
+    # _min,_max = 30,220
+    # h1 = fn.Histogram_Array(imgArray1)
+    # imgOut = fn.ContrastRange_Array(imgArray1,_min,_max)
+    # h2 = fn.Histogram_Array(imgOut)
+    # Show_images([imgArray1,h1,imgOut,h2],"Histogram Contrast Range min:{0} | max:{1}".format(_min,_max) )
     
     
-    print("----------------------------------------- Opérations morphologiques : BiColor")
-    imgBiColor = fn.Convert_BiColor_Array(imgArray1,50) # select pupil with color black
-    imgBiColorInverce = 1 - imgBiColor                  # select pupil with color white = بؤبؤ العين
-    Show_images([imgArray1,imgBiColor,imgBiColorInverce] , " image Bi Color")
-    
-    kernel = np.array ([[0, 1, 1, 1, 0],
-                        [1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1],
-                        [1, 1, 1, 1, 1],
-                        [0, 1, 1, 1, 0]], dtype = np.uint8)
-    print("----------------------------------------- Opérations morphologiques :Erosion")    
-    imgoutErosion = fn.Erosion_Array(imgBiColorInverce,kernel)
-    Show_images([imgBiColorInverce,imgoutErosion] , "Erosion")
-    
-    print("----------------------------------------- Opérations morphologiques :Dilation")
-    imgoutDilation =fn.Dilation_Array(imgBiColorInverce,kernel)
-    Show_images([imgBiColorInverce,imgoutDilation] , "Dilation")
+    # print("----------------------------------------- Amélioration du contraste")
+    # imgOut1 = fn.ContrastLog_Array(imgArray1)
+    # imgOut2 = fn.ContrastLinear_Array(imgArray1,2,0)
+    # imgOut3 = fn.ContrastInvers_255_Array(imgArray1)
+    # Show_images([imgArray1,imgOut1,imgOut2,imgOut3],"Contrast Log Linear Invers")
     
     print("----------------------------------------- Segmentation par clustering")
-    x,y,r = fn.iris(imgBiColorInverce)
+    x,y,r = fn.iris(imgArray1)
     print("iris X:",x," iris Y:",y," iris r:",r)
     
-    print("----------------------------------------- SIFT : Matching Show")
-    imgMatching , p= fn.GetMatchingImageValue_Array(imgArray1,imgArray2)
-    Show_images([imgMatching],"matches found SIFT =: {0}".format(p))
+    # print("----------------------------------------- Opérations morphologiques : BiColor")
+    # imgBiColor = fn.Convert_BiColor_Array(imgArray1,50) # select pupil with color black
+    # imgBiColorInverce = 1 - imgBiColor                  # select pupil with color white = بؤبؤ العين
+    # Show_images([imgArray1,imgBiColor,imgBiColorInverce] , " image Bi Color")
+    
+    # kernel = np.array ([[0, 1, 1, 1, 0],
+    #                     [1, 1, 1, 1, 1],
+    #                     [1, 1, 1, 1, 1],
+    #                     [1, 1, 1, 1, 1],
+    #                     [0, 1, 1, 1, 0]], dtype = np.uint8)
+    # print("----------------------------------------- Opérations morphologiques :Erosion")    
+    # imgoutErosion = fn.Erosion_Array(imgBiColorInverce,kernel)
+    # Show_images([imgBiColorInverce,imgoutErosion] , "Erosion")
+    
+    # print("----------------------------------------- Opérations morphologiques :Dilation")
+    # imgoutDilation =fn.Dilation_Array(imgBiColorInverce,kernel)
+    # Show_images([imgBiColorInverce,imgoutDilation] , "Dilation")
+
+    
+    # print("----------------------------------------- SIFT : Matching Show")
+    # imgMatching , p= fn.GetMatchingImageValue_Array(imgArray1,imgArray2)
+    # Show_images([imgMatching],"matches found SIFT =: {0}".format(p))
     
 main()
