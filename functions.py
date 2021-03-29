@@ -66,7 +66,15 @@ def Convert_Array2Image(_imgArray):
     return Image.fromarray(_imgArray.astype(np.uint8))
 # ---------------------------------------------------------------------- Contrast
 def ContrastLinear_Array(imgArray,_b,_a):
-    return _b* imgArray + _a
+    imgArray =  imgArray.copy()
+    for i in range(0,imgArray.shape[0]):
+        for j in range(0,imgArray.shape[1]):
+            imgArray[i][j]= int(imgArray[i][j]*_b+_a)
+            if imgArray[i][j] > 255:
+                imgArray[i][j] = 255
+            elif imgArray[i][j] <0:
+                imgArray[i][j] = 0
+    return imgArray
 
 # ---------------------------------------------------------------------- Contrast
 def ContrastInvers_255_Array(imgArray):

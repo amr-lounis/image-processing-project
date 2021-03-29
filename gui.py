@@ -150,7 +150,7 @@ def Morphologiques(_v):
         if _v == 1:
             imgOut = fn.Convert_Array2Image(imgBiColor255)
             CanvasOutSet(imgOut)
-        if _v == 2:
+        elif _v == 2:
             imgBiner = np.where(imgBiColor255 == 255, 1, 0)
             imgoutErosion = fn.Erosion_Array(imgBiner,kernel)
             imgoutErosion255 = np.where(imgoutErosion == 1, 255, 0)
@@ -166,7 +166,26 @@ def Morphologiques(_v):
     except:
         print("error show image outout")
 # ---------------------------------------------------- 
-         
+def Contraste(_v):
+    try:
+        filename = v_pathVar_input.get()
+        imgArray = fn.ReadImage2d_Array(filename) 
+        
+        if _v == 1:
+            _min,_max = 30,220
+            imgOutArray = fn.ContrastRange_Array(imgArray,_min,_max)
+        elif _v == 2:
+            imgOutArray = fn.ContrastLog_Array(imgArray)
+        elif _v == 3:
+            imgOutArray = fn.ContrastLinear_Array(imgArray,2,0)
+            print(imgArray.shape)
+        elif _v == 4:
+            imgOutArray = fn.ContrastInvers_255_Array(imgArray)
+
+        imgOut = fn.Convert_Array2Image(imgOutArray)
+        CanvasOutSet(imgOut)
+    except:
+        print("error show image outout")
 """  ***************************************************************************** ROOT """ 
 root = tk.Tk()
 root.geometry("800x600+300+50")
@@ -209,6 +228,10 @@ creteButton(frame4,"contours h",ShowLissage,4)
 """  ***************************************************************************** Frame Amélioration du contraste """ 
 frame5 = tk.Frame(root)
 frame5.pack()
+creteButton(frame5,"Contraste Range",Contraste,1)
+creteButton(frame5,"Contraste Log",Contraste,2)
+creteButton(frame5,"Contraste Linear",Contraste,3)
+creteButton(frame5,"Contraste Invers",Contraste,4)
 """  ***************************************************************************** Frame Segmentation par clustering """ 
 frame6 = tk.Frame(root)
 frame6.pack()
