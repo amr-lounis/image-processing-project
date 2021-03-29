@@ -59,6 +59,25 @@ def ShowLissage(_filter):
         CanvasOutSet(imgOut)
     except:
         print("error show image outout")
+        
+# ----------------------------------------------------       
+def Segmentation():
+    try:
+        filename =v_pathVar_input.get()
+        imgArray = fn.ReadImage2d_Array(filename)       
+        imgBiColor = fn.Convert_BiColor_Array(imgArray,50)  # select pupil with color black
+        imgBiColorInverce = 1 - imgBiColor                  # select pupil with color white
+        
+        iris_x,iris_y,iris_r = fn.iris(imgBiColorInverce)
+        pupil_x,pupil_y,pupil_r = fn.pupil(imgBiColorInverce)
+        
+        imgOut = fn.Convert_Array2Image(imgArray)
+        CanvasOutSet(imgOut)
+        v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
+        v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
+    except:
+        print("error show image outout")
+        
 # ----------------------------------------------------
 root = tk.Tk()
 # root.geometry("800x600+300+50")
@@ -66,8 +85,8 @@ root.title('iris recognition ')
 # root.geometry('{}x{}'.format(460, 350))
 # ***************************************************************************** Select Image
 frame1 = tk.Frame(root)
-frame1.grid(row=0,column=0)
-frame1.config(width=200,height=200,relief=tk.RIDGE)
+frame1.grid(row=1,column=0)
+# frame1.config(width=200,height=200,relief=tk.RIDGE)
 # ---------------------------------------------------- Button select image
 v_bt_path1= tk.Button(frame1,text="select image")
 v_bt_path1.grid(row=0,column=0)
@@ -79,8 +98,8 @@ v_path_input.bind("<Return>", lambda x: ShowImage(v_pathVar_input.get()))
 v_path_input.grid(row=0,column=1,columnspan=10)
 # ***************************************************************************** Canvas
 frame2 = tk.Frame(root)
-frame2.grid(row=1,column=0)
-frame2.config(width=200,height=200,relief=tk.RIDGE)
+frame2.grid(row=2,column=0)
+# frame2.config(width=200,height=200,relief=tk.RIDGE)
 # ---------------------------------------------------- Canvas in
 v_canvas_input=tk.Canvas(frame2, width=300, height=200, background='white')
 v_canvas_input.grid(row=0,column=0)
@@ -89,15 +108,15 @@ v_canvas_output=tk.Canvas(frame2, width=300, height=200, background='white')
 v_canvas_output.grid(row=0,column=1)
 # ***************************************************************************** Histogram
 frame3 = tk.Frame(root)
-frame3.grid(row=2,column=0)
-frame3.config(width=200,height=200,relief=tk.RIDGE)
+frame3.grid(row=3,column=0)
+# frame3.config(width=200,height=200,relief=tk.RIDGE)
 # ---------------------------------------------------- Button calcule and draw Histogram
 v_bt_Histogram= tk.Button(frame3,text="Histogram")
 v_bt_Histogram.grid(row=0,column=0)
 v_bt_Histogram.config(command = lambda : ShowHistogram()  )
 # # ***************************************************************************** Lissage
 frame4 = tk.Frame(root)
-frame4.grid(row=3,column=0)
+frame4.grid(row=4,column=0)
 frame4.config(width=200,height=200,relief=tk.RIDGE)
 filter1 = np.array([
     [0    , 1 / 9, 0      ],
@@ -128,20 +147,37 @@ v_bt_Lissage2= tk.Button(frame4,text="Lissage 1/9")
 v_bt_Lissage2.grid(row=0,column=1)
 v_bt_Lissage2.config(command = lambda : ShowLissage(filter2)  )
 # ---------------------------------------------------- Button Lissage 3
-v_bt_Lissage2= tk.Button(frame4,text="contours v")
-v_bt_Lissage2.grid(row=0,column=2)
-v_bt_Lissage2.config(command = lambda : ShowLissage(filter3)  )
+v_bt_Lissage3= tk.Button(frame4,text="contours v")
+v_bt_Lissage3.grid(row=0,column=2)
+v_bt_Lissage3.config(command = lambda : ShowLissage(filter3)  )
 # ---------------------------------------------------- Button Lissage 4
-v_bt_Lissage2= tk.Button(frame4,text="contours h")
-v_bt_Lissage2.grid(row=0,column=3)
-v_bt_Lissage2.config(command = lambda : ShowLissage(filter4)  )
+v_bt_Lissage4= tk.Button(frame4,text="contours h")
+v_bt_Lissage4.grid(row=0,column=3)
+v_bt_Lissage4.config(command = lambda : ShowLissage(filter4)  )
 # ----------------------------------------------------
 # ***************************************************************************** Amélioration du contraste
 frame5 = tk.Frame(root)
-frame5.grid(row=4,column=0)
+frame5.grid(row=5,column=0)
+# frame5.config(width=200,height=200,relief=tk.RIDGE)
+# ----------------------------------------------------
+# ***************************************************************************** Opérations morphologiques
+frame5 = tk.Frame(root)
+frame5.grid(row=6,column=0)
+# frame5.config(width=200,height=200,relief=tk.RIDGE)
+# ----------------------------------------------------
+# ***************************************************************************** Segmentation par clustering
+frame5 = tk.Frame(root)
+frame5.grid(row=7,column=0)
+# frame5.config(width=200,height=200,relief=tk.RIDGE)
+# ----------------------------------------------------
+v_bt_Segmentation= tk.Button(frame5,text="Segmentation")
+v_bt_Segmentation.grid(row=0,column=0)
+v_bt_Segmentation.config(command = lambda : Segmentation()  )
+# ***************************************************************************** SIFT
+frame5 = tk.Frame(root)
+frame5.grid(row=8,column=0)
 frame5.config(width=200,height=200,relief=tk.RIDGE)
 # ----------------------------------------------------
-
 
 
 root.mainloop()

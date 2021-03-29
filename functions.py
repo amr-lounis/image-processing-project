@@ -176,7 +176,7 @@ def pupil(_ArrayBiC,valeuFind = 1):
 # ---------------------------------------------------------------------- Segmentation
 def iris(_ArrayBiC,valeuFind = 1):
     x,y,r =pupil(_ArrayBiC,valeuFind)
-    return x,y,r*4
+    return x,y,r*3
 
 # ********************************************************************** Need opencv
 # ---------------------------------------------------------------------- Détecteur SIFT
