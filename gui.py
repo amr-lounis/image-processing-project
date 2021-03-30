@@ -297,9 +297,10 @@ def Recognition (_v):
 creteButton(frame9,"Recognition ",Recognition,1)
 l = tk.Label(frame9)
 l.pack(side=tk.LEFT)
-l['text'] ='--------------------------'
 l['bg']='#fff'
 l['fg']='#f00'
+l['font']=15
+l['text'] ='--------------------------'
 # ----------------------------------------------------
 
 
