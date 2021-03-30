@@ -12,10 +12,12 @@ def creteButton(_frame,_name,_func,_v):
 import ctypes
 def Mbox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
-
+def errorOutput():
+     Mbox("Error","error:There is a problem showing the results \n Please select the picture",0)
+     
 """  ***************************************************************************** ROOT """ 
 root = tk.Tk()
-root.geometry("800x600+300+50")
+root.geometry("1000x600+300+50")
 root.title('iris recognition ')
 ImageOutput = None
 v = tk.IntVar()
@@ -26,11 +28,8 @@ frame1.pack()
 # ----------------------------------------------------
 def getPath(_v)-> None:
     filename = filedialog.askopenfilename()
-    print("selected file : ",filename)
     v_path_input.delete(0,"end")
     v_path_input.insert(0, filename)
-    print("selected file in entry ",v_pathVar_input.get())
-    
     ShowImage()
     
 # ----------------------------------------------------   
@@ -41,7 +40,7 @@ def ShowImage():
         img = fn.Convert_Array2Image(imgArray)
         CanvasInSet(img)
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
         
 # ---------------------------------------------------- Button select image
 creteButton(frame1,"Select",getPath,1)
@@ -92,7 +91,7 @@ def ShowHistogram(_v):
         h = fn.Histogram_Array(imgArray)
         CanvasOutSet(h)
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
 # ----------------------------------------------------
 creteButton(frame3,"Histogram",ShowHistogram,1)
 
@@ -140,7 +139,7 @@ def ShowLissage(_v):
         imgOut = fn.Convert_Array2Image(imgArrayOut)
         CanvasOutSet(imgOut)
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
 # ----------------------------------------------------
 creteButton(frame4,"Lissage 5/9",ShowLissage,1)
 creteButton(frame4,"Lissage 1/9",ShowLissage,2)
@@ -170,7 +169,7 @@ def Contraste(_v):
         imgOut = fn.Convert_Array2Image(imgOutArray)
         CanvasOutSet(imgOut)
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
         
 # ----------------------------------------------------       
 creteButton(frame5,"Contraste Range",Contraste,1)
@@ -206,7 +205,7 @@ def Segmentation(_v):
         v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
             
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
         
 creteButton(frame6,"Segmentation",Segmentation,1)
 
@@ -246,7 +245,7 @@ def Morphologiques(_v):
             CanvasOutSet(imgOut)
 
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
         
 # ----------------------------------------------------       
 creteButton(frame7,"Seuillage",Morphologiques,1)
@@ -272,7 +271,7 @@ def SaveOutput(_v):
         ImageOutput.save(filename)
         Mbox("Save","Image is saved to: {}".format(filename),0)
     except:
-        Mbox("Error","error show image outout",0)
+        errorOutput()
 # ----------------------------------------------------        
 creteButton(frame8,"Save",SaveOutput,1)
 """  ***************************************************************************** Frame SIFT """
@@ -282,18 +281,18 @@ frame9.pack()
 def createDatabase (_v):
     files = filedialog.askopenfilenames()
     v= fn.databaseCreate(files)
-    Mbox("Database SIFT","Database SIFT is created {}".format(v),0)
+    Mbox("Database SIFT","Database SIFT is created .\n number pictor is :( {} )".format(v),0)
 creteButton(frame9,"create database ",createDatabase,1)
     
 def checkDatabase (_v):
-    Mbox("database","database SIFT size: {}".format(len(fn._listSIFT)),0)
+    Mbox("database","database SIFT size: ( {} )".format(len(fn._listSIFT)),0)
 creteButton(frame9,"check Database ",checkDatabase,1)
 
 def Recognition (_v):
     file = filedialog.askopenfilename()
     imgOut , v , p= fn.Recognition(file)
     CanvasOutSet(imgOut)
-    Mbox("Recognition","SIFT Matching max:{} Recognition : {}".format(v,p),0)
+    Mbox("Recognition","SIFT Matching max:( {} ) Recognition :( {} )".format(v,p),0)
 creteButton(frame9,"Recognition ",Recognition,1)
     
 # ----------------------------------------------------

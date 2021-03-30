@@ -179,7 +179,7 @@ def pupil(_imgArray,_seullage = 50, valeuFind = 0):
 # ---------------------------------------------------------------------- Segmentation
 def iris(_imgArray,_seullage = 50, valeuFind = 0):
     x,y,r =pupil(_imgArray,_seullage,valeuFind)
-    return x,y,r*2.5
+    return x,y,r*2
 # ---------------------------------------------------------------------- Segmentation
 def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
     _array = _array.copy()
@@ -248,10 +248,10 @@ def databaseCreate(_list):
     sift = cv2.xfeatures2d.SIFT_create()
     for f in _list:
         try:
-            numberP = os.path.basename(f)[0:3]
             imgArray = ReadImage2d_Array(f)
+            imgArray ,pupil,iris = Segmentation(imgArray)
             kp, des = sift.detectAndCompute(imgArray,None)
-            _listSIFT.append([numberP,f,des])
+            _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
     return len(_listSIFT)
@@ -259,36 +259,31 @@ def databaseCreate(_list):
 def Recognition(_path):
     try:
         global _listSIFT
-        print(_path)
-        # listO = load_object()
-        imgArray = ReadImage2d_Array(_path)
-        
-        imgArray ,pupil,iris = Segmentation(imgArray)
-        
+        imgArray = ReadImage2d_Array(_path) 
+        imgArray ,pupil,iris = Segmentation(imgArray)  
         kp1, des1 , img1 = Get_Keypoints_Des_Array(imgArray)
         
         maxMatching =0
         index = 0
         pos = 0
         for v in _listSIFT:
-            good = GetMatching(des1,v[2])
+            good = GetMatching(des1,v[1])
             if len(good) >= maxMatching:
                 pos = index
                 maxMatching = len(good)
-                num = os.path.basename(v[0])
-                print("name:",num,"SIFT:",maxMatching)
             index = index+1      
         
-        print("name:",_listSIFT[pos][0],"SIFT Matching max:",maxMatching,"path:",_listSIFT[pos][1])
+        print("SIFT Matching max value is:",maxMatching,"path:",_listSIFT[pos][0])
         
-        path2 = _listSIFT[pos][1]
+        path2 = _listSIFT[pos][0]
         imgArray2 = ReadImage2d_Array(path2)
+        imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)
         kp2, des2 , img2 = Get_Keypoints_Des_Array(imgArray2)
         good = GetMatching(des1,des2)
         imgArrayOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
         
         imgOut = Convert_Array2Image(imgArrayOut)
-        return imgOut,maxMatching,path2
+        return imgOut,maxMatching,os.path.basename(path2)
         
     except:
         print("Error Recon:")
