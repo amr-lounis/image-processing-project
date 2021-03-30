@@ -9,12 +9,10 @@ import numpy as np
 def creteButton(_frame,_name,_func,_v):
    return tk.Button( _frame,text=_name,width = 20,padx = 20,command = lambda : _func(_v)).pack(side=tk.LEFT)
 # ----------------------------------------------------
-import ctypes
 def Mbox(title, text, style):
-    return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+    tk.messagebox.showinfo(title=title, message=text)
 def errorOutput():
-     Mbox("Error","error:There is a problem showing the results \n Please select the picture",0)
-     
+    tk.messagebox.showerror(title="Error", message="error : There is a problem showing the results \n Please select the picture")
 """  ***************************************************************************** ROOT """ 
 root = tk.Tk()
 root.geometry("1000x600+300+50")
@@ -269,7 +267,7 @@ def SaveOutput(_v):
         global ImageOutput 
         print("save as :",filename)
         ImageOutput.save(filename)
-        Mbox("Save","Image is saved to: {}".format(filename),0)
+        Mbox("Save","Image is saved to: ( {} )".format(filename),0)
     except:
         errorOutput()
 # ----------------------------------------------------        
@@ -295,7 +293,7 @@ def Recognition (_v):
         CanvasOutSet(imgOut)
         varl.set("SIFT Matching max value is:( {} )\n Recognition :( {} )".format(v,p) )
     except:
-        varl.set("Database SIFT Error" )
+        varl.set("Database SIFT Size =: ( 0 )" )
 
 creteButton(frame9,"Recognition ",Recognition,1)
 varl = tk.StringVar()

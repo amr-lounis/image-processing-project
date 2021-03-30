@@ -1,8 +1,7 @@
 import numpy as np
-import os
-import io
 # ****************************************************************************
 def Convert_fig_img(fig):
+    import io
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
@@ -29,6 +28,7 @@ def Convert_3d_2d_Array(imgArray):
         return matrix2D
     else:
         print("len(imgArray.shape):",len(imgArray.shape))
+        
 # ----------------------------------------------------------------------
 def ReadImage2d_Array(_path):
     image = Image.open(_path)
@@ -155,7 +155,7 @@ def Dilation_Array(image, kernel):
             horizontal_pos += 1
         vertical_pos += 1
     return img_operated
-# ---------------------------------------------------------------------- Segmentation
+# ---------------------------------------------------------------------- Segmentation pupil
 def pupil(_imgArray,_seullage = 50, valeuFind = 0):
     n_columns =_imgArray.shape[1]
     n_rows =_imgArray.shape[0]
@@ -176,11 +176,11 @@ def pupil(_imgArray,_seullage = 50, valeuFind = 0):
     Y = int(sumY/sumN)
     R = int(np.sqrt(sumN/np.pi) ) #Area of a disk =  πr^2
     return X,Y,R
-# ---------------------------------------------------------------------- Segmentation
+# ---------------------------------------------------------------------- Segmentation iris
 def iris(_imgArray,_seullage = 50, valeuFind = 0):
     x,y,r =pupil(_imgArray,_seullage,valeuFind)
     return x,y,r*2
-# ---------------------------------------------------------------------- Segmentation
+# ---------------------------------------------------------------------- Segmentation color black in external cyrle 
 def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
     _array = _array.copy()
     for i in range(0,_array.shape[0]):
@@ -188,7 +188,7 @@ def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
             if( (j-_x)**2 + (i-_y)**2 ) >= _r**2:
                 _array[i][j]=0
     return _array
-# ---------------------------------------------------------------------- Segmentation             
+# ---------------------------------------------------------------------- Segmentation color black in internal cyrle           
 def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
     _array = _array.copy()    
     for i in range(0,_array.shape[0]):
@@ -209,6 +209,7 @@ def Segmentation(_imgArray):
 # ********************************************************************** Need opencv
 # ---------------------------------------------------------------------- Détecteur SIFT
 import cv2 as cv2
+import os
 def Get_Keypoints_Des_Array(_imgArray):
     # Initiate SIFT detector
     sift = cv2.xfeatures2d.SIFT_create()
@@ -218,7 +219,7 @@ def Get_Keypoints_Des_Array(_imgArray):
     # imgOut = cv2.drawKeypoints(img,kp,None,color=(0,255,0), flags=0)
     return kp,des,_imgArray
 
-# ---------------------------------------------------------------------- DescripteurDistance  SIFT
+# ---------------------------------------------------------------------- Descripteur Distance  SIFT
 def GetMatching(des1,des2):
     FLANN_INDEX_KDTREE = 1
     index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
@@ -232,7 +233,7 @@ def GetMatching(des1,des2):
             goodMatchs.append(m)
     return goodMatchs
 
-# ---------------------------------------------------------------------- all in one
+# ---------------------------------------------------------------------- test
 def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
     kp1, des1 , img1 = Get_Keypoints_Des_Array(_imgArray1)
     kp2, des2 , img2 = Get_Keypoints_Des_Array(_imgArray2)
@@ -241,7 +242,7 @@ def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
     # print ("matches found : %d" % (len(good)))
     imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
     return imgOut , len(good)
-
+# ---------------------------------------------------------------------- Create database of valeu des and path file
 _listSIFT = []
 def databaseCreate(_list):
     global _listSIFT
@@ -249,18 +250,18 @@ def databaseCreate(_list):
     for f in _list:
         try:
             imgArray = ReadImage2d_Array(f)
-            imgArray ,pupil,iris = Segmentation(imgArray)
+            imgArray ,pupil,iris = Segmentation(imgArray) # ------------ Segmentation all iris 
             kp, des = sift.detectAndCompute(imgArray,None)
             _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
     return len(_listSIFT)
-          
+# ---------------------------------------------------------------------- 
 def Recognition(_path):
     try:
         global _listSIFT
         imgArray = ReadImage2d_Array(_path) 
-        imgArray ,pupil,iris = Segmentation(imgArray)  
+        imgArray ,pupil,iris = Segmentation(imgArray)      # ------------ Segmentation iris ( l'échantillon )
         kp1, des1 , img1 = Get_Keypoints_Des_Array(imgArray)
         
         maxMatching =0
@@ -277,7 +278,7 @@ def Recognition(_path):
         
         path2 = _listSIFT[pos][0]
         imgArray2 = ReadImage2d_Array(path2)
-        imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)
+        imgArray2 ,pupil2,iris2 = Segmentation(imgArray2) # ------------ Segmentation iris
         kp2, des2 , img2 = Get_Keypoints_Des_Array(imgArray2)
         good = GetMatching(des1,des2)
         imgArrayOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
