@@ -55,7 +55,7 @@ frame2 = tk.Frame(root)
 frame2.pack()
 # ----------------------------------------------------
 def CanvasInSet(_img):
-    _img.thumbnail((600, 400), Image.ANTIALIAS)
+    _img.thumbnail((400, 300), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(_img)
     w, h = photo.width(), photo.height()
     v_canvas_input.image = photo
@@ -66,7 +66,7 @@ def CanvasInSet(_img):
 def CanvasOutSet(_img):
     global ImageOutput 
     ImageOutput = _img
-    _img.thumbnail((600, 400), Image.ANTIALIAS)
+    _img.thumbnail((400, 300), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(_img)
     w, h = photo.width(), photo.height()
     v_canvas_output.image = photo
