@@ -210,15 +210,6 @@ def Segmentation(_imgArray):
 # ---------------------------------------------------------------------- Détecteur SIFT
 import cv2 as cv2
 import os
-def Get_Keypoints_Des_Array(_imgArray):
-    # Initiate SIFT detector
-    sift = cv2.xfeatures2d.SIFT_create()
-    # find the keypoints and descriptors with SIFT
-    kp, des = sift.detectAndCompute(_imgArray,None)
-    # # draw keypoint
-    # imgOut = cv2.drawKeypoints(img,kp,None,color=(0,255,0), flags=0)
-    return kp,des,_imgArray
-
 # ---------------------------------------------------------------------- Descripteur Distance  SIFT
 def GetMatching(des1,des2):
     FLANN_INDEX_KDTREE = 1
@@ -233,25 +224,16 @@ def GetMatching(des1,des2):
             goodMatchs.append(m)
     return goodMatchs
 
-# ---------------------------------------------------------------------- test
-def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
-    kp1, des1 , img1 = Get_Keypoints_Des_Array(_imgArray1)
-    kp2, des2 , img2 = Get_Keypoints_Des_Array(_imgArray2)
-    good = GetMatching(des1,des2)
-
-    # print ("matches found : %d" % (len(good)))
-    imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
-    return imgOut , len(good)
 # ---------------------------------------------------------------------- Create database of valeu des and path file
 _listSIFT = []
-def databaseCreate(_list):
+def AddIrisToDatabase(_list):
     global _listSIFT
     sift = cv2.xfeatures2d.SIFT_create()
     for f in _list:
         try:
             imgArray = ReadImage2d_Array(f)
-            imgArray ,pupil,iris = Segmentation(imgArray) # ------------ Segmentation all iris 
-            kp, des = sift.detectAndCompute(imgArray,None)
+            imgArray ,pupil,iris = Segmentation(imgArray)   # ------------ Segmentation all iris 
+            kp, des = sift.detectAndCompute(imgArray,None)  # ------------ Descriptor of iris after Segmentation
             _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
@@ -259,10 +241,11 @@ def databaseCreate(_list):
 # ---------------------------------------------------------------------- 
 def Recognition(_path):
     try:
+        sift = cv2.xfeatures2d.SIFT_create()
         global _listSIFT
-        imgArray = ReadImage2d_Array(_path) 
-        imgArray ,pupil,iris = Segmentation(imgArray)      # ------------ Segmentation iris ( l'échantillon )
-        kp1, des1 , img1 = Get_Keypoints_Des_Array(imgArray)
+        imgArray1 = ReadImage2d_Array(_path) 
+        imgArray1 ,pupil,iris = Segmentation(imgArray1)   # ------------ Segmentation iris ( l'échantillon )
+        kp1, des1 = sift.detectAndCompute(imgArray1,None) # ------------ Descriptor of iris after Segmentation
         
         maxMatching =0
         index = 0
@@ -276,12 +259,12 @@ def Recognition(_path):
         
         print("SIFT Matching max value is:",maxMatching,"path:",_listSIFT[pos][0])
         
-        path2 = _listSIFT[pos][0]
+        path2 = _listSIFT[pos][0]  #-------------- This is the path of the recognized image
         imgArray2 = ReadImage2d_Array(path2)
-        imgArray2 ,pupil2,iris2 = Segmentation(imgArray2) # ------------ Segmentation iris
-        kp2, des2 , img2 = Get_Keypoints_Des_Array(imgArray2)
-        good = GetMatching(des1,des2)
-        imgArrayOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
+        imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)    # ------------ Segmentation iris That have been recognized
+        kp2, des2 = sift.detectAndCompute(imgArray2,None)    # ------------ Descriptor and keypoint of iris after Segmentation
+        good = GetMatching(des1,des2)                        # ------------ get matching Descriptor
+        imgArrayOut = cv2.drawMatches(imgArray1,kp1,imgArray2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0)) # drawing
         
         imgOut = Convert_Array2Image(imgArrayOut)
         return imgOut,maxMatching,os.path.basename(path2)

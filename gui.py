@@ -139,10 +139,10 @@ def ShowLissage(_v):
     except:
         errorOutput()
 # ----------------------------------------------------
-creteButton(frame4,"Lissage 5/9",ShowLissage,1)
-creteButton(frame4,"Lissage 1/9",ShowLissage,2)
-creteButton(frame4,"contours v",ShowLissage,3)
-creteButton(frame4,"contours h",ShowLissage,4)
+creteButton(frame4,"Smoothing ",ShowLissage,1)
+creteButton(frame4,"Smoothing medium filter",ShowLissage,2)
+creteButton(frame4,"vertical outlines",ShowLissage,3)
+creteButton(frame4,"horizontal outlines",ShowLissage,4)
 
 """  ***************************************************************************** Frame Amélioration du contraste """ 
 frame5 = tk.Frame(root)
@@ -170,10 +170,10 @@ def Contraste(_v):
         errorOutput()
         
 # ----------------------------------------------------       
-creteButton(frame5,"Contraste lmin lmax",Contraste,1)
-creteButton(frame5,"Contraste Log",Contraste,2)
-creteButton(frame5,"Contraste Linear",Contraste,3)
-creteButton(frame5,"Contraste Invers",Contraste,4)
+creteButton(frame5,"Contrast lmin lmax",Contraste,1)
+creteButton(frame5,"Contrast Log",Contraste,2)
+creteButton(frame5,"Contrast Linear",Contraste,3)
+creteButton(frame5,"Contrast Invers",Contraste,4)
 
 """  ***************************************************************************** Frame Segmentation par clustering """ 
 frame6 = tk.Frame(root)
@@ -246,7 +246,7 @@ def Morphologiques(_v):
         errorOutput()
         
 # ----------------------------------------------------       
-creteButton(frame7,"Seuillage",Morphologiques,1)
+creteButton(frame7,"Thresholding",Morphologiques,1)
 scale1 = tk.Scale(frame7,from_=0,to=255,orient=tk.HORIZONTAL,length=255)
 scale1.set(50)
 scale1.pack(side=tk.LEFT)
@@ -276,11 +276,11 @@ creteButton(frame8,"Save",SaveOutput,1)
 frame9 = tk.Frame(root)
 frame9.pack()
 
-def createDatabase (_v):
+def AddIrisToDatabase (_v):
     files = filedialog.askopenfilenames()
-    v= fn.databaseCreate(files)
-    Mbox("Database SIFT","Database SIFT is created .\n number pictor is :( {} )".format(v),0)
-creteButton(frame9,"create database ",createDatabase,1)
+    v= fn.AddIrisToDatabase(files)
+    Mbox("Database SIFT","Database SIFT is created , The number of iris available is :( {} )".format(v),0)
+creteButton(frame9,"Add iris to Database",AddIrisToDatabase,1)
     
 def checkDatabase (_v):
     Mbox("database","database SIFT size: ( {} )".format(len(fn._listSIFT)),0)
@@ -298,7 +298,7 @@ def Recognition (_v):
 creteButton(frame9,"Recognition ",Recognition,1)
 varl = tk.StringVar()
 varl.set("----------------------" )
-l = tk.Label(frame9,textvariable = varl,bg='#fff',fg='#f00',font=15)
+l = tk.Label(frame9,textvariable = varl,bg='#fff',fg='#000',font=15)
 l.pack(side=tk.LEFT)
 # ----------------------------------------------------
 
