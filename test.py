@@ -75,12 +75,7 @@ def main() -> None:
     Show_images([imgArray1,imgOut1,imgOut2,imgOut3],"Contrast Log Linear Invers")
     
     print("----------------------------------------- Segmentation par clustering")
-    iris_x,iris_y,iris_r = fn.iris(imgArray1)
-    pupil_x,pupil_y,pupil_r = fn.pupil(imgArray1)
-    
-    imgIris = fn.zeroExternalArray(imgArray1,iris_x,iris_y,iris_r)
-    imgIrisPupil = fn.zeroInternalArray(imgIris,pupil_x, pupil_y, pupil_r)
-    
+    imgIrisPupil ,pupil,iris = fn.Segmentation(imgArray1)
     Show_images([imgArray1,imgIrisPupil] , "Segmentation iris pupil")
     
     print("----------------------------------------- Opérations morphologiques : BiColor")

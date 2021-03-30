@@ -191,8 +191,9 @@ def Segmentation(_v):
         filename =v_pathVar_input.get()
         imgArray = fn.ReadImage2d_Array(filename)   
         
-        iris_x,iris_y,iris_r = fn.iris(imgArray)
-        pupil_x,pupil_y,pupil_r = fn.pupil(imgArray)
+        imgArray ,pupil,iris = fn.Segmentation(imgArray)
+        iris_x,iris_y,iris_r = iris
+        pupil_x,pupil_y,pupil_r = pupil
         
         imgArray = fn.zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
         imgArray = fn.zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
