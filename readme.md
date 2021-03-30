@@ -13,5 +13,9 @@ in consol unchack
 
 ![unchack](info/unchack.png)
 
+compile python to exe
 
+pip install pyinstaller
+
+pyinstaller --onefile pythonScriptName.py
 

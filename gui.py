@@ -290,17 +290,18 @@ creteButton(frame9,"check Database ",checkDatabase,1)
 
 def Recognition (_v):
     file = filedialog.askopenfilename()
-    imgOut , v , p= fn.Recognition(file)
-    CanvasOutSet(imgOut)
-    Mbox("Recognition","SIFT Matching max:( {} )\n Recognition :( {} )".format(v,p),0)
-    l['text'] = "SIFT Matching max value is:( {} )\n Recognition :( {} )".format(v,p)
+    try:
+        imgOut , v , p= fn.Recognition(file)
+        CanvasOutSet(imgOut)
+        varl.set("SIFT Matching max value is:( {} )\n Recognition :( {} )".format(v,p) )
+    except:
+        varl.set("Database SIFT Error" )
+
 creteButton(frame9,"Recognition ",Recognition,1)
-l = tk.Label(frame9)
+varl = tk.StringVar()
+varl.set("----------------------" )
+l = tk.Label(frame9,textvariable = varl,bg='#fff',fg='#f00',font=15)
 l.pack(side=tk.LEFT)
-l['bg']='#fff'
-l['fg']='#f00'
-l['font']=15
-l['text'] ='--------------------------'
 # ----------------------------------------------------
 
 
