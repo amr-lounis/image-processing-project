@@ -172,7 +172,7 @@ def Contraste(_v):
         errorOutput()
         
 # ----------------------------------------------------       
-creteButton(frame5,"Contraste Range",Contraste,1)
+creteButton(frame5,"Contraste lmin lmax",Contraste,1)
 creteButton(frame5,"Contraste Log",Contraste,2)
 creteButton(frame5,"Contraste Linear",Contraste,3)
 creteButton(frame5,"Contraste Invers",Contraste,4)
@@ -292,9 +292,14 @@ def Recognition (_v):
     file = filedialog.askopenfilename()
     imgOut , v , p= fn.Recognition(file)
     CanvasOutSet(imgOut)
-    Mbox("Recognition","SIFT Matching max:( {} ) Recognition :( {} )".format(v,p),0)
+    Mbox("Recognition","SIFT Matching max:( {} )\n Recognition :( {} )".format(v,p),0)
+    l['text'] = "SIFT Matching max value is:( {} )\n Recognition :( {} )".format(v,p)
 creteButton(frame9,"Recognition ",Recognition,1)
-    
+l = tk.Label(frame9)
+l.pack(side=tk.LEFT)
+l['text'] ='--------------------------'
+l['bg']='#fff'
+l['fg']='#f00'
 # ----------------------------------------------------
 
 
