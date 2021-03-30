@@ -3,18 +3,15 @@ Must be installed
 
 pip install opencv-contrib-python 
 
+pip list
+
 ![open terminal](info/01.PNG)
 
 ![code execut](info/02.PNG)
 
-After that you can install
+in consol unchack
 
-pip install opencv
+![unchack](unchack.png)
 
-pip install libopencv
 
-pip install py-opencv
 
-for show list packages
-
-pip list

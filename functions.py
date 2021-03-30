@@ -1,50 +1,26 @@
 import numpy as np
 import os
 import io
-from PIL import ImageDraw
 # ****************************************************************************
-def FilesYield(_dir_path,_extension):
-    for root, dirs, files in os.walk(os.path.abspath(_dir_path)): 
-        for file in files:
-            file = str(file)
-            if file.endswith(_extension):
-                yield os.path.join(root, file)     
-def Files(_dir_path,_extension):
-    return [f for f in FilesYield(_dir_path,_extension)]
-
-# ----------------------------------------------------------------------
 def Convert_fig_img(fig):
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
     img = Image.open(buf)
     return img
-# ----------------------------------------------------------------------
-def CropEllipse(_img,_x,_y,_r):  
-    mask = Image.new('L', _img.size)
-    mask_draw = ImageDraw.Draw(mask)
-    width, height = _img.size
-    print(width,height)
-    bbox =  (_x - _r, _y - _r, _x + _r, _y + _r)
-    mask_draw.ellipse( bbox,fill=255)
-    # add mask as alpha channel
-    _img.putalpha(mask)
-    return _img
+
 # ----------------------------------------------------------------------
 def Convert_3d_2d_Array(imgArray):
     if len(imgArray.shape) == 2:
         # print("------------------------------------------------- Array 2d")
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
-        # print("matrix 2 D","row",n_line,"col",n_cols)
         return imgArray
     
     elif len(imgArray.shape) == 3:
         # print("------------------------------------------------- Array 3d")
         n_line = imgArray.shape[0]
         n_cols = imgArray.shape[1]
-        n_3 = imgArray.shape[2]
-        # print("matrix 3 D","row",n_line,"col",n_cols,"d_3",n_3)
         matrix2D = np.zeros((n_line,n_cols), np.uint64)
         for i in range(0,n_line):
             for j in range(0,n_cols):
@@ -220,7 +196,16 @@ def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
             if( (j-_x)**2 + (i-_y)**2 ) <= _r**2:
                 _array[i][j]=0
     return _array
-                
+              
+def Segmentation(_imgArray):
+    pupil_x,pupil_y,pupil_r = pupil(_imgArray)
+    iris_x,iris_y,iris_r = iris(_imgArray)
+    
+    _imgArray = zeroExternalArray(_imgArray,iris_x,iris_y,iris_r)
+    _imgArray = zeroInternalArray(_imgArray,pupil_x, pupil_y, pupil_r)
+ 
+    return _imgArray,(pupil_x,pupil_y,pupil_r),(iris_x,iris_y,iris_r)
+ 
 # ********************************************************************** Need opencv
 # ---------------------------------------------------------------------- Détecteur SIFT
 import cv2 as cv2
@@ -243,7 +228,7 @@ def GetMatching(des1,des2):
     # store all the good matches as per Lowe's ratio test.
     goodMatchs = []
     for m,n in matches:
-        if m.distance < 0.7*n.distance:
+        if m.distance < 0.8*n.distance:
             goodMatchs.append(m)
     return goodMatchs
 
@@ -257,42 +242,54 @@ def GetMatchingImageValue_Array(_imgArray1,_imgArray2):
     imgOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
     return imgOut , len(good)
 
-import pickle
-def save_object(obj, _filename):
-    open_file = open(_filename, "wb")
-    pickle.dump(obj, open_file)
-    open_file.close()
-        
+_listSIFT = []
 def databaseCreate(_list):
+    global _listSIFT
     sift = cv2.xfeatures2d.SIFT_create()
-    listSIFT = []
     for f in _list:
         try:
             numberP = os.path.basename(f)[0:3]
             imgArray = ReadImage2d_Array(f)
             kp, des = sift.detectAndCompute(imgArray,None)
-            listSIFT.append([numberP,f,des])
+            _listSIFT.append([numberP,f,des])
         except:
             print("Error read file:",f)
-      
-    print("create database.pkl",len(listSIFT))
-    save_object(listSIFT,"database_sift.pkl")
-
-def SegmentationAll(_list):
-    for f in _list:
-        try:
-            name = os.path.basename(f)
-            imgArray = ReadImage2d_Array(f)
-            iris_x,iris_y,iris_r = iris(imgArray)
-            pupil_x,pupil_y,pupil_r = pupil(imgArray)
-            
-            imgArray = zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
-            imgArray = zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
-            
-            img = Convert_Array2Image(imgArray)
-            
-            img.save("iris_Segmentation\\"+name)
-        except:
-            print("Error Save file:",f)
-      
+    return len(_listSIFT)
+          
+def Recognition(_path):
+    try:
+        global _listSIFT
+        print(_path)
+        # listO = load_object()
+        imgArray = ReadImage2d_Array(_path)
+        
+        imgArray ,pupil,iris = Segmentation(imgArray)
+        
+        kp1, des1 , img1 = Get_Keypoints_Des_Array(imgArray)
+        
+        maxMatching =0
+        index = 0
+        pos = 0
+        for v in _listSIFT:
+            good = GetMatching(des1,v[2])
+            if len(good) >= maxMatching:
+                pos = index
+                maxMatching = len(good)
+                num = os.path.basename(v[0])
+                print("name:",num,"SIFT:",maxMatching)
+            index = index+1      
+        
+        print("name:",_listSIFT[pos][0],"SIFT Matching max:",maxMatching,"path:",_listSIFT[pos][1])
+        
+        path2 = _listSIFT[pos][1]
+        imgArray2 = ReadImage2d_Array(path2)
+        kp2, des2 , img2 = Get_Keypoints_Des_Array(imgArray2)
+        good = GetMatching(des1,des2)
+        imgArrayOut = cv2.drawMatches(img1,kp1,img2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0))
+        
+        imgOut = Convert_Array2Image(imgArrayOut)
+        return imgOut,maxMatching,path2
+        
+    except:
+        print("Error Recon:")
 # ****************************************************************************
