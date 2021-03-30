@@ -159,7 +159,7 @@ def Contraste(_v):
         elif _v == 2:
             imgOutArray = fn.ContrastLog_Array(imgArray)
         elif _v == 3:
-            imgOutArray = fn.ContrastLinear_Array(imgArray,2,0)
+            imgOutArray = fn.ContrastLinear_Array(imgArray,1.2,0)
             print(imgArray.shape)
         elif _v == 4:
             imgOutArray = fn.ContrastInvers_255_Array(imgArray)
