@@ -11,7 +11,7 @@ pip list
 
 in consol unchack
 
-![unchack](unchack.png)
+![unchack](info/unchack.png)
 
 
 
