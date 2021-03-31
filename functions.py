@@ -156,7 +156,7 @@ def Dilation_Array(image, kernel):
         vertical_pos += 1
     return img_operated
 # ---------------------------------------------------------------------- Segmentation pupil
-def pupil(_imgArray,_seullage = 50, valeuFind = 0):
+def pupil(_imgArray,_seullage, valeuFind):
     n_columns =_imgArray.shape[1]
     n_rows =_imgArray.shape[0]
     
@@ -177,11 +177,11 @@ def pupil(_imgArray,_seullage = 50, valeuFind = 0):
     R = int(np.sqrt(sumN/np.pi) ) #Area of a disk =  πr^2
     return X,Y,R
 # ---------------------------------------------------------------------- Segmentation iris
-def iris(_imgArray,_seullage = 50, valeuFind = 0):
+def iris(_imgArray,_seullage, valeuFind):
     x,y,r =pupil(_imgArray,_seullage,valeuFind)
     return x,y,r*2
 # ---------------------------------------------------------------------- Segmentation color white in external cyrle 
-def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
+def WipeOutCircle(_array,_x,_y,_r):
     _array = _array.copy()
     for i in range(0,_array.shape[0]):
         for j in range(0,_array.shape[1]):
@@ -189,7 +189,7 @@ def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
                 _array[i][j]=255
     return _array
 # ---------------------------------------------------------------------- Segmentation color black in internal cyrle           
-def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
+def WipeInsideCircle(_array,_x,_y,_r):
     _array = _array.copy()    
     for i in range(0,_array.shape[0]):
         for j in range(0,_array.shape[1]):
@@ -198,11 +198,11 @@ def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
     return _array
               
 def Segmentation(_imgArray,_seullage = 50, valeuFind = 0):
-    pupil_x,pupil_y,pupil_r = pupil(_imgArray)
-    iris_x,iris_y,iris_r = iris(_imgArray)
+    pupil_x,pupil_y,pupil_r = pupil(_imgArray,_seullage,valeuFind)
+    iris_x,iris_y,iris_r = iris(_imgArray,_seullage,valeuFind)
     
-    _imgArray = zeroExternalArray(_imgArray,iris_x,iris_y,iris_r)
-    _imgArray = zeroInternalArray(_imgArray,pupil_x, pupil_y, pupil_r)
+    _imgArray = WipeOutCircle(_imgArray,iris_x,iris_y,iris_r)
+    _imgArray = WipeInsideCircle(_imgArray,pupil_x, pupil_y, pupil_r)
  
     return _imgArray,(pupil_x,pupil_y,pupil_r),(iris_x,iris_y,iris_r)
  

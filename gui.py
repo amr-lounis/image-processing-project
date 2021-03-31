@@ -186,17 +186,14 @@ def _create_circle(self, x, y, r, **kwargs):
 tk.Canvas.create_circle = _create_circle
 # ----------------------------------------------------
 def Segmentation(_v):
-    try:
+    # try:
         filename =v_pathVar_input.get()
         imgArray = fn.ReadImage2d_Array(filename)   
         
         imgArray ,pupil,iris = fn.Segmentation(imgArray)
         iris_x,iris_y,iris_r = iris
         pupil_x,pupil_y,pupil_r = pupil
-        
-        imgArray = fn.zeroExternalArray(imgArray,iris_x,iris_y,iris_r)
-        imgArray = fn.zeroInternalArray(imgArray,pupil_x, pupil_y, pupil_r)
-        
+
         img = fn.Convert_Array2Image(imgArray)
 
         CanvasOutSet(img)
@@ -204,8 +201,8 @@ def Segmentation(_v):
         v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
         v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
             
-    except:
-        errorOutput()
+    # except:
+    #     errorOutput()
         
 creteButton(frame6,"Segmentation",Segmentation,1)
 
