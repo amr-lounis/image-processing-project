@@ -196,7 +196,7 @@ def WipeInsideCircle(_array,_x,_y,_r):
             if( (j-_x)**2 + (i-_y)**2 ) <= _r**2:
                 _array[i][j]=0
     return _array
-              
+# ---------------------------------------------------------------------- All Segmentation 
 def Segmentation(_imgArray,_seullage = 50, valeuFind = 0):
     pupil_x,pupil_y,pupil_r = pupil(_imgArray,_seullage,valeuFind)
     iris_x,iris_y,iris_r = iris(_imgArray,_seullage,valeuFind)
@@ -232,8 +232,8 @@ def AddIrisToDatabase(_list):
     for f in _list:
         try:
             imgArray = ReadImage2d_Array(f)
-            imgArrayIris ,pupil,iris = Segmentation(imgArray)   # ------------ Segmentation all iris 
-            kp, des = sift.detectAndCompute(imgArrayIris,None)  # ------------ Descriptor of iris after Segmentation
+            # imgArray ,pupil,iris = Segmentation(imgArray)   # ------------ Segmentation all iris 
+            kp, des = sift.detectAndCompute(imgArray,None)  # ------------ Descriptor of iris after Segmentation
             _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
@@ -244,7 +244,7 @@ def Recognition(_path):
         sift = cv2.xfeatures2d.SIFT_create()
         global _listSIFT
         imgArray1 = ReadImage2d_Array(_path) 
-        imgArray1 ,pupil,iris = Segmentation(imgArray1)   # ------------ Segmentation iris ( l'échantillon )
+        # imgArray1 ,pupil,iris = Segmentation(imgArray1)   # ------------ Segmentation iris ( l'échantillon )
         kp1, des1 = sift.detectAndCompute(imgArray1,None) # ------------ Descriptor of iris after Segmentation
         
         maxMatching =0
@@ -265,9 +265,9 @@ def Recognition(_path):
         # ------------------------------------------------------ this for chowing matching 
         path2 = _listSIFT[maxPos][0]  #-------------- This is the path of the recognized image
         imgArray2 = ReadImage2d_Array(path2) #-------------- read image from database
-        imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)    # ------------ Segmentation iris That have been recognized
+        # imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)    # ------------ Segmentation iris That have been recognized
         kp2, des2 = sift.detectAndCompute(imgArray2,None)    # ------------ Descriptor and keypoint of iris after Segmentation
-        imgArrayOut = cv2.drawMatches(imgArray1,kp1,imgArray2,kp2,maxGood,None ,**dict(matchColor = (0,255,0),flags = 0)) # drawing
+        imgArrayOut = cv2.drawMatches(imgArray1,kp1,imgArray2,kp2,maxGood,None ,**dict(matchColor = (0,255,0),flags = 2)) # drawing
         
         imgOut = Convert_Array2Image(imgArrayOut)
         return imgOut,maxMatching,os.path.basename(path2)
