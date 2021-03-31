@@ -277,12 +277,12 @@ frame9.pack()
 
 def AddIrisToDatabase (_v):
     files = filedialog.askopenfilenames()
-    v= fn.AddIrisToDatabase(files)
-    Mbox("Database SIFT","Database SIFT is created , The number of iris available is :( {} )".format(v),0)
+    fn.AddIrisToDatabase(files)
+    Mbox("Database SIFT","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
 creteButton(frame9,"Add iris to Database",AddIrisToDatabase,1)
     
 def checkDatabase (_v):
-    Mbox("database","database SIFT size: ( {} )".format(len(fn._listSIFT)),0)
+    Mbox("database","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
 creteButton(frame9,"check Database ",checkDatabase,1)
 
 def Recognition (_v):

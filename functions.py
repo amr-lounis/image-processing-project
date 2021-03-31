@@ -237,7 +237,6 @@ def AddIrisToDatabase(_list):
             _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
-    return len(_listSIFT)
 
 # ---------------------------------------------------------------------- 
 def Recognition(_path):
