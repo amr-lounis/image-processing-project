@@ -293,7 +293,10 @@ def Recognition (_v):
     try:
         imgOut , v , p= fn.Recognition(file)
         CanvasOutSet(imgOut)
-        varl.set("SIFT Matching max value is:( {} )\n Recognition :( {} )".format(v,p) )
+        if v >= 10: 
+            varl.set("SIFT Matching max value is:( {} )\n Recognition :( {} )".format(v,p) )
+        else:
+            varl.set("SIFT Matching max value is:( {} )\n This iris is not recognized in database \n But it is similar ( {} )".format(v,p) )
     except:
         varl.set("Database SIFT Size =: ( 0 )" )
 

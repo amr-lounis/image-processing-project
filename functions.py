@@ -220,7 +220,7 @@ def GetMatching(des1,des2):
     # store all the good matches as per Lowe's ratio test.
     goodMatchs = []
     for m,n in matches:
-        if m.distance < 0.8*n.distance:
+        if m.distance < 0.7*n.distance:
             goodMatchs.append(m)
     return goodMatchs
 
