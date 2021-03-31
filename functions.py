@@ -232,12 +232,13 @@ def AddIrisToDatabase(_list):
     for f in _list:
         try:
             imgArray = ReadImage2d_Array(f)
-            imgArray ,pupil,iris = Segmentation(imgArray)   # ------------ Segmentation all iris 
-            kp, des = sift.detectAndCompute(imgArray,None)  # ------------ Descriptor of iris after Segmentation
+            imgArrayIris ,pupil,iris = Segmentation(imgArray)   # ------------ Segmentation all iris 
+            kp, des = sift.detectAndCompute(imgArrayIris,None)  # ------------ Descriptor of iris after Segmentation
             _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
     return len(_listSIFT)
+
 # ---------------------------------------------------------------------- 
 def Recognition(_path):
     try:
@@ -248,27 +249,31 @@ def Recognition(_path):
         kp1, des1 = sift.detectAndCompute(imgArray1,None) # ------------ Descriptor of iris after Segmentation
         
         maxMatching =0
+        maxGood = []
+        maxPos = 0
         index = 0
-        pos = 0
+       
         for v in _listSIFT:
             good = GetMatching(des1,v[1])
             if len(good) >= maxMatching:
-                pos = index
+                maxPos = index
                 maxMatching = len(good)
+                maxGood = good
             index = index+1      
         
-        print("SIFT Matching max value is:",maxMatching,"path:",_listSIFT[pos][0])
+        print("SIFT Matching max value is:",maxMatching,"path:",_listSIFT[maxPos][0])
         
-        path2 = _listSIFT[pos][0]  #-------------- This is the path of the recognized image
-        imgArray2 = ReadImage2d_Array(path2)
+        # ------------------------------------------------------ this for chowing matching 
+        path2 = _listSIFT[maxPos][0]  #-------------- This is the path of the recognized image
+        imgArray2 = ReadImage2d_Array(path2) #-------------- read image from database
         imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)    # ------------ Segmentation iris That have been recognized
         kp2, des2 = sift.detectAndCompute(imgArray2,None)    # ------------ Descriptor and keypoint of iris after Segmentation
-        good = GetMatching(des1,des2)                        # ------------ get matching Descriptor
-        imgArrayOut = cv2.drawMatches(imgArray1,kp1,imgArray2,kp2,good,None ,**dict(matchColor = (0,255,0),flags = 0)) # drawing
+        imgArrayOut = cv2.drawMatches(imgArray1,kp1,imgArray2,kp2,maxGood,None ,**dict(matchColor = (0,255,0),flags = 0)) # drawing
         
         imgOut = Convert_Array2Image(imgArrayOut)
         return imgOut,maxMatching,os.path.basename(path2)
         
     except:
         print("Error Recon:")
+
 # ****************************************************************************

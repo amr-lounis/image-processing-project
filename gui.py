@@ -10,9 +10,11 @@ def creteButton(_frame,_name,_func,_v):
    return tk.Button( _frame,text=_name,width = 20,padx = 20,command = lambda : _func(_v)).pack(side=tk.LEFT)
 # ----------------------------------------------------
 def Mbox(title, text, style):
-    tk.messagebox.showinfo(title=title, message=text)
+    from tkinter.messagebox import showinfo
+    showinfo(title=title, message=text)
 def errorOutput():
-    tk.messagebox.showerror(title="Error", message="error : There is a problem showing the results \n Please select the picture")
+    from tkinter.messagebox import showerror
+    showerror(title="Error", message="error : There is a problem showing the results \n Please select the picture")
 """  ***************************************************************************** ROOT """ 
 root = tk.Tk()
 root.geometry("1000x600+300+50")
