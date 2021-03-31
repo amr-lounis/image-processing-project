@@ -34,7 +34,7 @@ frameN=-1
 frameN= frameN+1
 # ----------------------------------------------------
 def getPath(_v)-> None:
-    filename = filedialog.askopenfilename(initialdir='./')
+    filename = filedialog.askopenfilename(initialdir='./',defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
     if filename == None :
         return
     v_path_input.delete(0,"end")
@@ -262,7 +262,7 @@ frameN=frameN+1
 # ----------------------------------------------------
 def SaveOutput(_v):
     try:
-        filename = filedialog.asksaveasfilename(defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
+        filename = filedialog.asksaveasfilename(initialdir='./',defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
         if not filename:
             return
         
@@ -278,7 +278,7 @@ creteButton(listFram[frameN],"Save",SaveOutput,1)
 frameN=frameN+1
 # ----------------------------------------------------
 def AddIrisToDatabase (_v):
-    files = filedialog.askopenfilenames()
+    files = filedialog.askopenfilenames(initialdir='./',defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
     fn.AddIrisToDatabase(files)
     Mbox("Database SIFT","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
 creteButton(listFram[frameN],"Add iris to Database",AddIrisToDatabase,1)
@@ -288,7 +288,7 @@ def checkDatabase (_v):
 creteButton(listFram[frameN],"check Database ",checkDatabase,1)
 # ----------------------------------------------------
 def Recognition (_v):
-    file = filedialog.askopenfilename()
+    file = filedialog.askopenfilename(initialdir='./',defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
     try:
         imgOut , v , p= fn.Recognition(file)
         CanvasOutSet(imgOut)
