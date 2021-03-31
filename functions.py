@@ -180,13 +180,13 @@ def pupil(_imgArray,_seullage = 50, valeuFind = 0):
 def iris(_imgArray,_seullage = 50, valeuFind = 0):
     x,y,r =pupil(_imgArray,_seullage,valeuFind)
     return x,y,r*2
-# ---------------------------------------------------------------------- Segmentation color black in external cyrle 
+# ---------------------------------------------------------------------- Segmentation color white in external cyrle 
 def zeroExternalArray(_array,_x,_y,_r): #  معادلة قرص
     _array = _array.copy()
     for i in range(0,_array.shape[0]):
         for j in range(0,_array.shape[1]):
             if( (j-_x)**2 + (i-_y)**2 ) >= _r**2:
-                _array[i][j]=0
+                _array[i][j]=255
     return _array
 # ---------------------------------------------------------------------- Segmentation color black in internal cyrle           
 def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
@@ -197,7 +197,7 @@ def zeroInternalArray(_array,_x,_y,_r): #  معادلة قرص
                 _array[i][j]=0
     return _array
               
-def Segmentation(_imgArray):
+def Segmentation(_imgArray,_seullage = 50, valeuFind = 0):
     pupil_x,pupil_y,pupil_r = pupil(_imgArray)
     iris_x,iris_y,iris_r = iris(_imgArray)
     
