@@ -86,7 +86,7 @@ def Histogram_Array(imgArray):
     fig = Figure()
     ax = fig.subplots()
     ax.set_xlabel("value of pixel")
-    ax.set_ylabel("nomber repitition")   
+    ax.set_ylabel("pixel frequency")   
     ax.set_title('histogram')
     ax.plot(range(0,256),y,'black');
 

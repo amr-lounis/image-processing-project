@@ -19,15 +19,24 @@ def errorOutput():
 root = tk.Tk()
 root.geometry("1000x600+300+50")
 root.title('iris recognition ')
+# ----------------------------------------------------
 ImageOutput = None
+# ----------------------------------------------------
 v = tk.IntVar()
 v.set(1)
+# ----------------------------------------------------
+listFram =[]
+for i in range(0,10):
+    listFram.append(tk.Frame(root))
+    listFram[i].pack()
+frameN=-1
 """  ***************************************************************************** Frame Select Image """ 
-frame1 = tk.Frame(root)
-frame1.pack()
+frameN= frameN+1
 # ----------------------------------------------------
 def getPath(_v)-> None:
-    filename = filedialog.askopenfilename()
+    filename = filedialog.askopenfilename(initialdir='./')
+    if filename == None :
+        return
     v_path_input.delete(0,"end")
     v_path_input.insert(0, filename)
     ShowImage()
@@ -43,17 +52,16 @@ def ShowImage():
         errorOutput()
         
 # ---------------------------------------------------- Button select image
-creteButton(frame1,"Select",getPath,1)
+creteButton(listFram[frameN],"Select",getPath,1)
 # # ---------------------------------------------------- Entry path of image in
-v_pathVar_input = tk.StringVar(frame1)
-v_path_input = tk.Entry(frame1,textvariable=v_pathVar_input,width=50)
+v_pathVar_input = tk.StringVar(listFram[frameN])
+v_path_input = tk.Entry(listFram[frameN],textvariable=v_pathVar_input,width=50)
 v_path_input.bind("<Return>", lambda x: ShowImage())
 v_path_input.pack(side=tk.LEFT)
 
 """  ***************************************************************************** Frame Canvas """ 
-frame2 = tk.Frame(root)
-frame2.pack()
-# ----------------------------------------------------
+frameN=frameN+1
+# ---------------------------------------------------- 
 def CanvasInSet(_img):
     _img.thumbnail((800, 600), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(_img)
@@ -74,16 +82,15 @@ def CanvasOutSet(_img):
     v_canvas_output.create_image(0, 0, image=photo, anchor=tk.NW)
     
 # ---------------------------------------------------- Canvas in
-v_canvas_input=tk.Canvas(frame2, width=300, height=200, background='white')
+v_canvas_input=tk.Canvas(listFram[frameN], width=300, height=200, background='white')
 v_canvas_input.grid(row=0,column=0)
 # ---------------------------------------------------- Canvas Out
-v_canvas_output=tk.Canvas(frame2, width=300, height=200, background='white')
+v_canvas_output=tk.Canvas(listFram[frameN], width=300, height=200, background='white')
 v_canvas_output.grid(row=0,column=1)
 
 """  ***************************************************************************** Frame Histogram """ 
-frame3 = tk.Frame(root)
-frame3.pack()
-# ----------------------------------------------------
+frameN=frameN+1
+# ---------------------------------------------------- 
 def ShowHistogram(_v):
     try:
         filename =v_pathVar_input.get()
@@ -93,12 +100,11 @@ def ShowHistogram(_v):
     except:
         errorOutput()
 # ----------------------------------------------------
-creteButton(frame3,"Histogram",ShowHistogram,1)
+creteButton(listFram[frameN],"Histogram",ShowHistogram,1)
 
 """  ***************************************************************************** Frame Lissage """ 
-frame4 = tk.Frame(root)
-frame4.pack()
-# ----------------------------------------------------
+frameN=frameN+1
+# ---------------------------------------------------- 
 def ShowLissage(_v):
     print("ShowLissage:",_v)
     filter1 = np.array([
@@ -141,14 +147,13 @@ def ShowLissage(_v):
     except:
         errorOutput()
 # ----------------------------------------------------
-creteButton(frame4,"Smoothing ",ShowLissage,1)
-creteButton(frame4,"Smoothing medium filter",ShowLissage,2)
-creteButton(frame4,"vertical outlines",ShowLissage,3)
-creteButton(frame4,"horizontal outlines",ShowLissage,4)
+creteButton(listFram[frameN],"Smoothing ",ShowLissage,1)
+creteButton(listFram[frameN],"Smoothing medium filter",ShowLissage,2)
+creteButton(listFram[frameN],"vertical outlines",ShowLissage,3)
+creteButton(listFram[frameN],"horizontal outlines",ShowLissage,4)
 
 """  ***************************************************************************** Frame Amélioration du contraste """ 
-frame5 = tk.Frame(root)
-frame5.pack()
+frameN=frameN+1
 # ---------------------------------------------------- 
 def Contraste(_v):
     try:
@@ -156,7 +161,7 @@ def Contraste(_v):
         imgArray = fn.ReadImage2d_Array(filename) 
         
         if _v == 1:                                        #   Contrast lmin lmax
-            _min,_max = 30,220
+            _min,_max = 50,200
             imgOutArray = fn.ContrastRange_Array(imgArray,_min,_max)
         elif _v == 2:                                       #  Contrast Log
             imgOutArray = fn.ContrastLog_Array(imgArray)
@@ -172,14 +177,13 @@ def Contraste(_v):
         errorOutput()
         
 # ----------------------------------------------------       
-creteButton(frame5,"Contrast lmin lmax",Contraste,1)
-creteButton(frame5,"Contrast Log",Contraste,2)
-creteButton(frame5,"Contrast Linear",Contraste,3)
-creteButton(frame5,"Contrast Invers",Contraste,4)
+creteButton(listFram[frameN],"Contrast lmin:50 lmax:200",Contraste,1)
+creteButton(listFram[frameN],"Contrast Log",Contraste,2)
+creteButton(listFram[frameN],"Contrast Linear",Contraste,3)
+creteButton(listFram[frameN],"Contrast Invers",Contraste,4)
 
 """  ***************************************************************************** Frame Segmentation par clustering """ 
-frame6 = tk.Frame(root)
-frame6.pack()
+frameN=frameN+1
 # ----------------------------------------------------
 def _create_circle(self, x, y, r, **kwargs):
     return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
@@ -187,28 +191,28 @@ tk.Canvas.create_circle = _create_circle
 # ----------------------------------------------------
 def Segmentation(_v):
     try:
-        filename =v_pathVar_input.get()
-        imgArray = fn.ReadImage2d_Array(filename)   
-        
-        imgArray ,pupil,iris = fn.Segmentation(imgArray)
-        iris_x,iris_y,iris_r = iris
-        pupil_x,pupil_y,pupil_r = pupil
-
-        img = fn.Convert_Array2Image(imgArray)
-
-        CanvasOutSet(img)
-        
-        v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
-        v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
+        if _v == 1:
+            filename =v_pathVar_input.get()
+            imgArray = fn.ReadImage2d_Array(filename)   
+            
+            imgArray ,pupil,iris = fn.Segmentation(imgArray)
+            iris_x,iris_y,iris_r = iris
+            pupil_x,pupil_y,pupil_r = pupil
+    
+            img = fn.Convert_Array2Image(imgArray)
+    
+            CanvasOutSet(img)
+            
+            v_canvas_output.create_circle(pupil_x, pupil_y, pupil_r, outline="#00F", width=4)
+            v_canvas_output.create_circle(iris_x, iris_y, iris_r, outline="#F00", width=4)
             
     except:
         errorOutput()
         
-creteButton(frame6,"Segmentation",Segmentation,1)
+creteButton(listFram[frameN],"Segmentation",Segmentation,1)
 
 """  *****************************************************************************  Frame Opérations morphologiques """ 
-frame7 = tk.Frame(root)
-frame7.pack()
+frameN=frameN+1
 # ----------------------------------------------------  
 def Morphologiques(_v):
     try:
@@ -245,17 +249,16 @@ def Morphologiques(_v):
         errorOutput()
         
 # ----------------------------------------------------       
-creteButton(frame7,"Thresholding",Morphologiques,1)
-scale1 = tk.Scale(frame7,from_=0,to=255,orient=tk.HORIZONTAL,length=255)
+creteButton(listFram[frameN],"Thresholding",Morphologiques,1)
+scale1 = tk.Scale(listFram[frameN],from_=0,to=255,orient=tk.HORIZONTAL,length=255)
 scale1.set(50)
 scale1.pack(side=tk.LEFT)
 
-creteButton(frame7,"Erosion",Morphologiques,2)
-creteButton(frame7,"Dilation",Morphologiques,3)
+creteButton(listFram[frameN],"Erosion",Morphologiques,2)
+creteButton(listFram[frameN],"Dilation",Morphologiques,3)
 
 """  ***************************************************************************** Save """ 
-frame8 = tk.Frame(root)
-frame8.pack()
+frameN=frameN+1
 # ----------------------------------------------------
 def SaveOutput(_v):
     try:
@@ -270,21 +273,20 @@ def SaveOutput(_v):
     except:
         errorOutput()
 # ----------------------------------------------------        
-creteButton(frame8,"Save",SaveOutput,1)
+creteButton(listFram[frameN],"Save",SaveOutput,1)
 """  ***************************************************************************** Frame SIFT """
-frame9 = tk.Frame(root)
-frame9.pack()
-
+frameN=frameN+1
+# ----------------------------------------------------
 def AddIrisToDatabase (_v):
     files = filedialog.askopenfilenames()
     fn.AddIrisToDatabase(files)
     Mbox("Database SIFT","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
-creteButton(frame9,"Add iris to Database",AddIrisToDatabase,1)
-    
+creteButton(listFram[frameN],"Add iris to Database",AddIrisToDatabase,1)
+# ----------------------------------------------------
 def checkDatabase (_v):
     Mbox("database","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
-creteButton(frame9,"check Database ",checkDatabase,1)
-
+creteButton(listFram[frameN],"check Database ",checkDatabase,1)
+# ----------------------------------------------------
 def Recognition (_v):
     file = filedialog.askopenfilename()
     try:
@@ -297,12 +299,10 @@ def Recognition (_v):
     except:
         varl.set("Database SIFT Size =: ( 0 )" )
 
-creteButton(frame9,"Recognition ",Recognition,1)
+creteButton(listFram[frameN],"Recognition ",Recognition,1)
 varl = tk.StringVar()
 varl.set("----------------------" )
-l = tk.Label(frame9,textvariable = varl,bg='#fff',fg='#000',font=15)
+l = tk.Label(listFram[frameN],textvariable = varl,bg='#fff',fg='#000',font=15)
 l.pack(side=tk.LEFT)
 # ----------------------------------------------------
-
-
 root.mainloop()
