@@ -76,7 +76,7 @@ def Histogram_Array(imgArray):
         for j in range(0,imgArray.shape[1]):
             y[imgArray[i,j]] += 1
     
-    fig = Figure()
+    fig = Figure(figsize=(5,5))
     ax = fig.subplots()
     ax.set_xlabel("value of pixel")
     ax.set_ylabel("pixel frequency")   
