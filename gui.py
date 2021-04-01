@@ -5,15 +5,18 @@ import functions as fn
 import tkinter as tk
 import numpy as np
 
+from tkinter.messagebox import showinfo
+from tkinter.messagebox import showerror
+
 # ---------------------------------------------------- 
 def creteButton(_frame,_name,_func,_v):
    return tk.Button( _frame,text=_name,width = 20,padx = 20,command = lambda : _func(_v)).pack(side=tk.LEFT)
 # ----------------------------------------------------
+
 def Mbox(title, text, style):
-    from tkinter.messagebox import showinfo
     showinfo(title=title, message=text)
+    
 def errorOutput():
-    from tkinter.messagebox import showerror
     showerror(title="Error", message="error : There is a problem showing the results \n Please select the picture")
 """  ***************************************************************************** ROOT """ 
 root = tk.Tk()
@@ -63,23 +66,31 @@ v_path_input.pack(side=tk.LEFT)
 frameN=frameN+1
 # ---------------------------------------------------- 
 def CanvasInSet(_img):
-    _img.thumbnail((800, 600), Image.ANTIALIAS)
-    photo = ImageTk.PhotoImage(_img)
-    w, h = photo.width(), photo.height()
-    v_canvas_input.image = photo
-    v_canvas_input.config(width=w, height=h)
-    v_canvas_input.create_image(0, 0, image=photo, anchor=tk.NW)
+    try:
+        _img.thumbnail((800, 600), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(_img)
+        w, h = photo.width(), photo.height()
+        v_canvas_input.image = photo
+        v_canvas_input.config(width=w, height=h)
+        v_canvas_input.create_image(0, 0, image=photo, anchor=tk.NW)
+    except:
+        errorOutput()
+
     
 # ----------------------------------------------------   
 def CanvasOutSet(_img):
     global ImageOutput 
-    ImageOutput = _img
-    _img.thumbnail((800, 600), Image.ANTIALIAS)
-    photo = ImageTk.PhotoImage(_img)
-    w, h = photo.width(), photo.height()
-    v_canvas_output.image = photo
-    v_canvas_output.config(width=w, height=h)
-    v_canvas_output.create_image(0, 0, image=photo, anchor=tk.NW)
+    try:
+        ImageOutput = _img
+        _img.thumbnail((800, 600), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(_img)
+        w, h = photo.width(), photo.height()
+        v_canvas_output.image = photo
+        v_canvas_output.config(width=w, height=h)
+        v_canvas_output.create_image(0, 0, image=photo, anchor=tk.NW)
+    except:
+       errorOutput() 
+
     
 # ---------------------------------------------------- Canvas in
 v_canvas_input=tk.Canvas(listFram[frameN], width=300, height=200, background='white')

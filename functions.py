@@ -1,8 +1,9 @@
 import numpy as np
+from matplotlib.figure import Figure
+from io import BytesIO
 # ****************************************************************************
 def Convert_fig_img(fig):
-    import io
-    buf = io.BytesIO()
+    buf = BytesIO()
     fig.savefig(buf)
     buf.seek(0)
     img = Image.open(buf)
@@ -28,6 +29,7 @@ def Convert_3d_2d_Array(imgArray):
         return matrix2D
     else:
         print("len(imgArray.shape):",len(imgArray.shape))
+        return None
         
 # ----------------------------------------------------------------------
 def ReadImage2d_Array(_path):
@@ -77,7 +79,6 @@ def ContrastRange_Array(imgArray,_min,_max):
 
 # ----------------------------------------------------------------------  Egalisation d’histogramme
 def Histogram_Array(imgArray):
-    from matplotlib.figure import Figure
     y = np.zeros(256, np.uint32)
     for i in range(0,imgArray.shape[0]):
         for j in range(0,imgArray.shape[1]):
@@ -208,14 +209,14 @@ def Segmentation(_imgArray,_seullage = 50, valeuFind = 0):
  
 # ********************************************************************** Need opencv
 # ---------------------------------------------------------------------- Détecteur SIFT
-import cv2 as cv2
-import os
+from cv2 import FlannBasedMatcher ,xfeatures2d ,drawMatches
+from os import path
 # ---------------------------------------------------------------------- Descripteur Distance  SIFT
 def GetMatching(des1,des2):
     FLANN_INDEX_KDTREE = 1
     index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
     search_params = dict(checks = 50)
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    flann = FlannBasedMatcher(index_params, search_params)
     matches = flann.knnMatch(des1, des2, k=2)
     # store all the good matches as per Lowe's ratio test.
     goodMatchs = []
@@ -228,7 +229,7 @@ def GetMatching(des1,des2):
 _listSIFT = []
 def AddIrisToDatabase(_list):
     global _listSIFT
-    sift = cv2.xfeatures2d.SIFT_create()
+    sift = xfeatures2d.SIFT_create()
     for f in _list:
         try:
             imgArray = ReadImage2d_Array(f)
@@ -241,7 +242,7 @@ def AddIrisToDatabase(_list):
 # ---------------------------------------------------------------------- 
 def Recognition(_path):
     try:
-        sift = cv2.xfeatures2d.SIFT_create()
+        sift = xfeatures2d.SIFT_create()
         global _listSIFT
         imgArray1 = ReadImage2d_Array(_path) 
         # imgArray1 ,pupil,iris = Segmentation(imgArray1)   # ------------ Segmentation iris ( l'échantillon )
@@ -267,10 +268,10 @@ def Recognition(_path):
         imgArray2 = ReadImage2d_Array(path2) #-------------- read image from database
         # imgArray2 ,pupil2,iris2 = Segmentation(imgArray2)    # ------------ Segmentation iris That have been recognized
         kp2, des2 = sift.detectAndCompute(imgArray2,None)    # ------------ Descriptor and keypoint of iris after Segmentation
-        imgArrayOut = cv2.drawMatches(imgArray1,kp1,imgArray2,kp2,maxGood,None ,**dict(matchColor = (0,255,0),flags = 2)) # drawing
+        imgArrayOut = drawMatches(imgArray1,kp1,imgArray2,kp2,maxGood,None ,**dict(matchColor = (0,255,0),flags = 2)) # drawing
         
         imgOut = Convert_Array2Image(imgArrayOut)
-        return imgOut,maxMatching,os.path.basename(path2)
+        return imgOut,maxMatching,path.basename(path2)
         
     except:
         print("Error Recon:")
