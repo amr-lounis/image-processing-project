@@ -1,4 +1,4 @@
-from PIL import ImageTk, Image
+from PIL import ImageTk ,Image
 from tkinter import filedialog
 
 import functions as fn
@@ -67,7 +67,7 @@ frameN=frameN+1
 # ---------------------------------------------------- 
 def CanvasInSet(_img):
     try:
-        _img.thumbnail((800, 600), Image.ANTIALIAS)
+        _img.thumbnail((600, 400), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(_img)
         w, h = photo.width(), photo.height()
         v_canvas_input.image = photo
@@ -82,7 +82,7 @@ def CanvasOutSet(_img):
     global ImageOutput 
     try:
         ImageOutput = _img
-        _img.thumbnail((800, 600), Image.ANTIALIAS)
+        _img.thumbnail((600, 400), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(_img)
         w, h = photo.width(), photo.height()
         v_canvas_output.image = photo
@@ -106,8 +106,8 @@ def ShowHistogram(_v):
     try:
         filename =v_pathVar_input.get()
         imgArray = fn.ReadImage2d_Array(filename) 
-        h = fn.Histogram_Array(imgArray)
-        CanvasOutSet(h)
+        imgOut = fn.Histogram_Array(imgArray)  
+        CanvasOutSet(imgOut)
     except:
         errorOutput()
 # ----------------------------------------------------

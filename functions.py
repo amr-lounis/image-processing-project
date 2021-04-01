@@ -1,15 +1,8 @@
 import numpy as np
 from matplotlib.figure import Figure
-from io import BytesIO
+import io
+from PIL import Image
 # ****************************************************************************
-def Convert_fig_img(fig):
-    buf = BytesIO()
-    fig.savefig(buf)
-    buf.seek(0)
-    img = Image.open(buf)
-    return img
-
-# ----------------------------------------------------------------------
 def Convert_3d_2d_Array(imgArray):
     if len(imgArray.shape) == 2:
         # print("------------------------------------------------- Array 2d")
@@ -37,7 +30,6 @@ def ReadImage2d_Array(_path):
     imgArray = np.array(image)  
     return Convert_3d_2d_Array(imgArray)
 # ----------------------------------------------------------------------
-from PIL import Image
 def Convert_Array2Image(_imgArray):
     return Image.fromarray(_imgArray.astype(np.uint8))
 # ---------------------------------------------------------------------- Contrast
@@ -77,7 +69,7 @@ def ContrastRange_Array(imgArray,_min,_max):
                 imgArray[i][j] = 0
     return imgArray
 
-# ----------------------------------------------------------------------  Egalisation d’histogramme
+# ----------------------------------------------------------------------  d’histogramme
 def Histogram_Array(imgArray):
     y = np.zeros(256, np.uint32)
     for i in range(0,imgArray.shape[0]):
@@ -91,8 +83,12 @@ def Histogram_Array(imgArray):
     ax.set_title('histogram')
     ax.plot(range(0,256),y,'black');
 
-    img = Convert_fig_img(fig)
-    return img;
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    img = Image.open(buf)  
+    return img
+
 
 # ---------------------------------------------------------------------- Lissage des images
 def Filter_Array(_arrayIn,_filter3x3):
