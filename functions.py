@@ -3,6 +3,17 @@ from matplotlib.figure import Figure
 import io
 from PIL import Image
 # ****************************************************************************
+def FilesYield(_dir_path,_extension):
+    import os
+    for root, dirs, files in os.walk(os.path.abspath(_dir_path)): 
+        for file in files:
+            file = str(file)
+            if file.endswith(_extension):
+                yield os.path.join(root, file)     
+def Files(_dir_path,_extension):
+    return [f for f in FilesYield(_dir_path,_extension)]
+
+# ****************************************************************************
 def Convert_3d_2d_Array(imgArray):
     if len(imgArray.shape) == 2:
         # print("------------------------------------------------- Array 2d")
@@ -193,7 +204,7 @@ def WipeInsideCircle(_array,_x,_y,_r):
             if( (j-_x)**2 + (i-_y)**2 ) <= _r**2:
                 _array[i][j]=0
     return _array
-# ---------------------------------------------------------------------- All Segmentation 
+# ---------------------------------------------------------------------- Segmentation image
 def Segmentation(_imgArray,_seullage = 50, valeuFind = 0):
     pupil_x,pupil_y,pupil_r = pupil(_imgArray,_seullage,valeuFind)
     iris_x,iris_y,iris_r = iris(_imgArray,_seullage,valeuFind)
@@ -202,7 +213,20 @@ def Segmentation(_imgArray,_seullage = 50, valeuFind = 0):
     _imgArray = WipeInsideCircle(_imgArray,pupil_x, pupil_y, pupil_r)
  
     return _imgArray,(pupil_x,pupil_y,pupil_r),(iris_x,iris_y,iris_r)
- 
+# ---------------------------------------------------------------------- Segmentation list of iris and save
+def SegmentationListAndSave(_listFilse,_outPath):
+    import os
+    if not os.path.exists(_outPath):
+        os.makedirs(_outPath)
+    for f in _listFilse:
+        imgArray = ReadImage2d_Array(f)   
+        
+        imgArray ,pupil,iris = Segmentation(imgArray)
+    
+        img = Image.fromarray(imgArray.astype(np.uint8))
+        saveTo =_outPath+"/"+os.path.basename(f)
+        img.save(saveTo)
+        print("Save : ",saveTo)
 # ********************************************************************** Need opencv
 # ---------------------------------------------------------------------- Détecteur SIFT
 from cv2 import FlannBasedMatcher ,xfeatures2d ,drawMatches
@@ -223,8 +247,13 @@ def GetMatching(des1,des2):
 
 # ---------------------------------------------------------------------- Create database of valeu des and path file
 _listSIFT = []
+
 def AddIrisToDatabase(_list):
     global _listSIFT
+    for d in _listSIFT:
+        if (d[0] in _list ):
+            _list.remove(d[0])     
+            
     sift = xfeatures2d.SIFT_create()
     for f in _list:
         try:
@@ -234,7 +263,7 @@ def AddIrisToDatabase(_list):
             _listSIFT.append([f,des])
         except:
             print("Error read file:",f)
-
+            
 # ---------------------------------------------------------------------- 
 def Recognition(_path):
     try:

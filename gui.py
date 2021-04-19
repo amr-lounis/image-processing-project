@@ -290,12 +290,20 @@ frameN=frameN+1
 # ----------------------------------------------------
 def AddIrisToDatabase (_v):
     files = filedialog.askopenfilenames(initialdir='./',defaultextension=".bmp",title = "Select file", filetypes=(("bmp file", "*.bmp"),("All Files", "*.*") ))
-    fn.AddIrisToDatabase(files)
-    Mbox("Database SIFT","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
-creteButton(listFram[frameN],"Add iris to Database",AddIrisToDatabase,1)
+    fn.SegmentationListAndSave(files,'./irisDatabase')
+    Mbox("Segmentation Ok","Segmentation And Save",0)
+creteButton(listFram[frameN],"Segmentation All and Save",AddIrisToDatabase,1)
 # ----------------------------------------------------
+import os
 def checkDatabase (_v):
+    database_path= './irisDatabase'
+    if not os.path.exists(database_path):
+        os.makedirs(database_path)
+    listPathTmp = fn.Files(database_path,'.bmp')
+
+    fn.AddIrisToDatabase(listPathTmp)
     Mbox("database","The number of iris available is :( {} )".format(len(fn._listSIFT)),0)
+    
 creteButton(listFram[frameN],"check Database ",checkDatabase,1)
 # ----------------------------------------------------
 def Recognition (_v):
